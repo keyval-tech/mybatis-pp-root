@@ -1,0 +1,7 @@
+# Project exclude paths
+/.gradle/
+/build/
+/mybatis-pp-annotation/build/
+/mybatis-pp-annotation/build/classes/java/main/
+/mybatis-pp-core/build/
+/mybatis-pp-core/build/classes/java/main/

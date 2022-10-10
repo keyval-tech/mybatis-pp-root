@@ -2,6 +2,7 @@ package com.kovizone.mybatispp.extension.conditions.update;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
+import com.kovizone.mybatispp.core.conditions.update.ExtendUpdate;
 import com.kovizone.mybatispp.extension.conditions.ChainWrapper;
 
 /**
@@ -11,7 +12,7 @@ import com.kovizone.mybatispp.extension.conditions.ChainWrapper;
  * @see com.baomidou.mybatisplus.extension.conditions.update.ChainUpdate
  * @since 2022/10/10
  */
-public interface ChainUpdate<T, W extends Wrapper<T>, Children> extends ChainWrapper<T, W, Children> {
+public interface ChainUpdate<T, W extends Wrapper<T> & ExtendUpdate<T, W>, Children> extends ChainWrapper<T, W, Children> {
 
     /**
      * 更新数据

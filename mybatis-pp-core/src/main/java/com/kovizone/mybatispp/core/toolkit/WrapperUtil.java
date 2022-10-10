@@ -38,7 +38,7 @@ public class WrapperUtil {
      * @return 查询包装类
      */
     public static <T> QueryWrapper<T> query(Object obj) {
-        return new QueryWrapper<T>().consumer(w -> wrapperModelProcessor(w, obj));
+        return new QueryWrapper<T>().func(w -> wrapperModelProcessor(w, obj));
     }
 
     /**
@@ -49,7 +49,7 @@ public class WrapperUtil {
      * @return 更新包装类
      */
     public static <T> UpdateWrapper<T> update(Object obj) {
-        return new UpdateWrapper<T>().consumer(w -> wrapperModelProcessor(w, obj));
+        return new UpdateWrapper<T>().func(w -> wrapperModelProcessor(w, obj));
     }
 
     @SuppressWarnings("unchecked")

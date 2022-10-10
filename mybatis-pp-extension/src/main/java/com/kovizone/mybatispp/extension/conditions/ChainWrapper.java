@@ -29,7 +29,8 @@ public interface ChainWrapper<T, W extends Wrapper<T>, Children> {
     /**
      * 设置最终拿去执行的 Wrapper
      *
-     * @return children
+     * @param wrapper Wrapper
+     * @return Children
      */
     Children setWrapper(W wrapper);
 }
