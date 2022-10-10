@@ -26,7 +26,7 @@ public interface ChainUpdate<T, W extends Wrapper<T> & ExtendUpdate<T, W>, Child
     /**
      * 更新数据
      *
-     * @param entity 实体类
+     * @param entity 实体
      * @return 是否成功
      */
     default boolean update(T entity) {

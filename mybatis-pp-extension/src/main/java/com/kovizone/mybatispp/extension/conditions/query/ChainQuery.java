@@ -58,7 +58,7 @@ public interface ChainQuery<T, W extends Wrapper<T> & ExtendQuery<T, W>, Childre
     /**
      * 判断数据是否存在
      *
-     * @return true 存在 false 不存在
+     * @return true 存在 false 不存
      */
     default boolean exists() {
         return this.count() > 0;

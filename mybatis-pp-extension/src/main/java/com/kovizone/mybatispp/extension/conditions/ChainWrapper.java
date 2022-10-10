@@ -20,14 +20,12 @@ public interface ChainWrapper<T, W extends Wrapper<T>, Children> {
     BaseMapper<T> getBaseMapper();
 
     /**
-     * 获取最终拿去执行的 Wrapper
-     *
      * @return Wrapper
      */
     W getWrapper();
 
     /**
-     * 设置最终拿去执行的 Wrapper
+     * 设置终拿去执行的 Wrapper
      *
      * @param wrapper Wrapper
      * @return Children

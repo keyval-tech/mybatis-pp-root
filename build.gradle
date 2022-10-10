@@ -24,7 +24,9 @@ ext {
             "springExpression"     : "org.springframework:spring-expression:${springExpressionVersion}",
 
             // other
-            "lombok"               : "org.projectlombok:lombok:${lombokVersion}"
+            "lombok"               : "org.projectlombok:lombok:${lombokVersion}",
+            "junit-api"            : "org.junit.jupiter:junit-jupiter-api:${junitVersion}",
+            "junit-engine"         : "org.junit.jupiter:junit-jupiter-engine:${junitVersion}",
     ]
 }
 
@@ -41,7 +43,12 @@ subprojects {
     }
 
     dependencies {
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+        testImplementation "${lib."junit-api"}"
+        testRuntimeOnly "${lib."junit-engine"}"
+
+        compileOnly "${lib."lombok"}"
+        annotationProcessor "${lib."lombok"}"
+        testCompileOnly "${lib."lombok"}"
+        testAnnotationProcessor "${lib."lombok"}"
     }
 }
