@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+}
+
+group 'com.kovizone'
+version '3.5.2'
+
+ext {
+    versions = [
+            mybatisPlusVersion = '3.5.2',
+            springExpressionVersion = '5.3.23',
+            lombokVersion = '1.18.24',
+            junitVersion = '5.9.0',
+    ]
+
+    lib = [
+            // mybatis-plus
+            "mybatisPlus"          : "com.baomidou:mybatis-plus:${mybatisPlusVersion}",
+            "mybatisPlusCore"      : "com.baomidou:mybatis-plus-core:${mybatisPlusVersion}",
+            "mybatisPlusAnnotation": "com.baomidou:mybatis-plus-annotation:${mybatisPlusVersion}",
+            "mybatisPlusExtension" : "com.baomidou:mybatis-plus-extension:${mybatisPlusVersion}",
+
+            // spring
+            "springExpression"     : "org.springframework:spring-expression:${springExpressionVersion}",
+
+            // other
+            "lombok"               : "org.projectlombok:lombok:${lombokVersion}"
+    ]
+}
+
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'signing'
+    apply plugin: 'maven-publish'
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven { url "https://maven.aliyun.com/repository/public" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    }
+}

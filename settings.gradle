@@ -1,0 +1,4 @@
+rootProject.name = 'mybatis-pp-root'
+include 'mybatis-pp-core'
+include 'mybatis-pp-annotation'
+
