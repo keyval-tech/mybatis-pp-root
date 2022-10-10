@@ -17,7 +17,6 @@ import org.apache.ibatis.reflection.property.PropertyNamer;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.baomidou.mybatisplus.core.enums.SqlKeyword.ORDER_BY;
@@ -271,6 +270,38 @@ public abstract class AbstractExtendWrapper<T, Children extends AbstractExtendWr
         return typedThis;
     }
 
+    @Override
+    public Children gtSql(boolean condition, SFunction<T, ?> column, String inValue) {
+        if (condition) {
+            return gtSql(columnToString(column), inValue);
+        }
+        return typedThis;
+    }
+
+    @Override
+    public Children geSql(boolean condition, SFunction<T, ?> column, String inValue) {
+        if (condition) {
+            return geSql(columnToString(column), inValue);
+        }
+        return typedThis;
+    }
+
+    @Override
+    public Children ltSql(boolean condition, SFunction<T, ?> column, String inValue) {
+        if (condition) {
+            return ltSql(columnToString(column), inValue);
+        }
+        return typedThis;
+    }
+
+    @Override
+    public Children leSql(boolean condition, SFunction<T, ?> column, String inValue) {
+        if (condition) {
+            return leSql(columnToString(column), inValue);
+        }
+        return typedThis;
+    }
+
     @SafeVarargs
     @Override
     public final Children groupBy(SFunction<T, ?> column, SFunction<T, ?>... columns) {
@@ -316,11 +347,6 @@ public abstract class AbstractExtendWrapper<T, Children extends AbstractExtendWr
         if (condition) {
             return orderBy(true, isAsc, columnToString(column), columnToString(columns));
         }
-        return typedThis;
-    }
-
-    public Children consumer(Consumer<Children> consumer) {
-        consumer.accept(typedThis);
         return typedThis;
     }
 

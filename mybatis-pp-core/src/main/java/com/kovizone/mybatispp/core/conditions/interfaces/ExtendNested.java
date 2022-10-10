@@ -1,6 +1,7 @@
 package com.kovizone.mybatispp.core.conditions.interfaces;
 
 import com.baomidou.mybatisplus.core.conditions.interfaces.Nested;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * ExtendNested

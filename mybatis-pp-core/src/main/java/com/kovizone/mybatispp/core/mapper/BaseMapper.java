@@ -59,7 +59,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return 映射结果
      */
     default T selectOne(Consumer<QueryWrapper<T>> queryConsumer) {
-        return selectOne(new QueryWrapper<>(MapperUtil.extractModelClass(this)).consumer(queryConsumer));
+        return selectOne(new QueryWrapper<>(MapperUtil.extractModelClass(this)).func(queryConsumer));
     }
 
     /**
@@ -71,7 +71,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return 映射结果
      */
     default <M> M selectOne(Consumer<QueryWrapper<T>> queryConsumer, SFunction<T, M> column) {
-        return selectOne(new QueryWrapper<>(MapperUtil.extractModelClass(this)).consumer(queryConsumer), column);
+        return selectOne(new QueryWrapper<>(MapperUtil.extractModelClass(this)).func(queryConsumer), column);
     }
 
     /**
@@ -100,7 +100,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return 映射结果
      */
     default List<T> selectList(Consumer<QueryWrapper<T>> queryConsumer) {
-        return selectList(new QueryWrapper<>(MapperUtil.extractModelClass(this)).consumer(queryConsumer));
+        return selectList(new QueryWrapper<>(MapperUtil.extractModelClass(this)).func(queryConsumer));
     }
 
     /**
@@ -112,7 +112,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return 映射结果集
      */
     default <M> List<M> selectList(Consumer<QueryWrapper<T>> queryConsumer, SFunction<T, M> column) {
-        return selectList(new QueryWrapper<>(MapperUtil.extractModelClass(this)).consumer(queryConsumer), column);
+        return selectList(new QueryWrapper<>(MapperUtil.extractModelClass(this)).func(queryConsumer), column);
     }
 
     /**
@@ -140,7 +140,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return 分页结果集
      */
     default <E extends IPage<T>> E selectPage(E page, Consumer<QueryWrapper<T>> queryConsumer) {
-        return selectPage(page, new QueryWrapper<>(MapperUtil.extractModelClass(this)).consumer(queryConsumer));
+        return selectPage(page, new QueryWrapper<>(MapperUtil.extractModelClass(this)).func(queryConsumer));
     }
 
     // 重载selectCount
@@ -152,7 +152,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return 统计
      */
     default Long selectCount(Consumer<QueryWrapper<T>> queryConsumer) {
-        return selectCount(new QueryWrapper<>(MapperUtil.extractModelClass(this)).consumer(queryConsumer));
+        return selectCount(new QueryWrapper<>(MapperUtil.extractModelClass(this)).func(queryConsumer));
     }
 
     // 重载update
@@ -165,7 +165,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return 更新数量
      */
     default int update(T entity, Consumer<UpdateWrapper<T>> queryConsumer) {
-        return update(entity, new UpdateWrapper<>(MapperUtil.extractModelClass(this)).consumer(queryConsumer));
+        return update(entity, new UpdateWrapper<>(MapperUtil.extractModelClass(this)).func(queryConsumer));
     }
 
     /**
@@ -175,7 +175,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return 更新数量
      */
     default int update(Consumer<UpdateWrapper<T>> updateConsumer) {
-        return update(new UpdateWrapper<>(MapperUtil.extractModelClass(this)).consumer(updateConsumer));
+        return update(new UpdateWrapper<>(MapperUtil.extractModelClass(this)).func(updateConsumer));
     }
 
     /**
@@ -191,7 +191,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
     // 重载delete
 
     default int delete(Consumer<QueryWrapper<T>> queryConsumer) {
-        return delete(new QueryWrapper<>(MapperUtil.extractModelClass(this)).consumer(queryConsumer));
+        return delete(new QueryWrapper<>(MapperUtil.extractModelClass(this)).func(queryConsumer));
     }
 
     // 新增exist

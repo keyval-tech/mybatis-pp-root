@@ -103,6 +103,54 @@ public interface LambdaFunc<T, Children> extends Func<Children, String> {
     /**
      * ignore
      */
+    default Children gtSql(SFunction<T, ?> column, String inValue) {
+        return gtSql(true, column, inValue);
+    }
+
+    /**
+     * ignore
+     */
+    Children gtSql(boolean condition, SFunction<T, ?> column, String inValue);
+
+    /**
+     * ignore
+     */
+    default Children geSql(SFunction<T, ?> column, String inValue) {
+        return geSql(true, column, inValue);
+    }
+
+    /**
+     * ignore
+     */
+    Children geSql(boolean condition, SFunction<T, ?> column, String inValue);
+
+    /**
+     * ignore
+     */
+    default Children ltSql(SFunction<T, ?> column, String inValue) {
+        return ltSql(true, column, inValue);
+    }
+
+    /**
+     * ignore
+     */
+    Children ltSql(boolean condition, SFunction<T, ?> column, String inValue);
+
+    /**
+     * ignore
+     */
+    default Children leSql(SFunction<T, ?> column, String inValue) {
+        return leSql(true, column, inValue);
+    }
+
+    /**
+     * ignore
+     */
+    Children leSql(boolean condition, SFunction<T, ?> column, String inValue);
+
+    /**
+     * ignore
+     */
     default Children notInSql(SFunction<T, ?> column, String inValue) {
         return notInSql(true, column, inValue);
     }

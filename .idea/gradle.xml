@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/mybatis-pp-annotation" />
             <option value="$PROJECT_DIR$/mybatis-pp-core" />
+            <option value="$PROJECT_DIR$/mybatis-pp-extension" />
           </set>
         </option>
       </GradleProjectSettings>

@@ -69,21 +69,6 @@ public class QueryWrapper<T> extends AbstractExtendWrapper<T, QueryWrapper<T>> i
     }
 
     @Override
-    public QueryWrapper<T> select(String... columns) {
-        if (ArrayUtils.isNotEmpty(columns)) {
-            this.sqlSelect.setStringValue(String.join(StringPool.COMMA, columns));
-        }
-        return typedThis;
-    }
-
-    @Override
-    public QueryWrapper<T> select(Class<T> entityClass, Predicate<TableFieldInfo> predicate) {
-        super.setEntityClass(entityClass);
-        this.sqlSelect.setStringValue(TableInfoHelper.getTableInfo(getEntityClass()).chooseSelect(predicate));
-        return typedThis;
-    }
-
-    @Override
     public String getSqlSelect() {
         return sqlSelect.getStringValue();
     }
@@ -103,6 +88,21 @@ public class QueryWrapper<T> extends AbstractExtendWrapper<T, QueryWrapper<T>> i
     protected QueryWrapper<T> instance() {
         return new QueryWrapper<>(getEntity(), getEntityClass(), paramNameSeq, paramNameValuePairs, new MergeSegments(),
                 paramAlias, SharedString.emptyString(), SharedString.emptyString(), SharedString.emptyString());
+    }
+
+    @Override
+    public QueryWrapper<T> select(String... columns) {
+        if (ArrayUtils.isNotEmpty(columns)) {
+            this.sqlSelect.setStringValue(String.join(StringPool.COMMA, columns));
+        }
+        return typedThis;
+    }
+
+    @Override
+    public QueryWrapper<T> select(Class<T> entityClass, Predicate<TableFieldInfo> predicate) {
+        super.setEntityClass(entityClass);
+        this.sqlSelect.setStringValue(TableInfoHelper.getTableInfo(getEntityClass()).chooseSelect(predicate));
+        return typedThis;
     }
 
     @Override
