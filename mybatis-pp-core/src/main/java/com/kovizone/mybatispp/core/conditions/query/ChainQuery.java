@@ -1,10 +1,8 @@
-package com.kovizone.mybatispp.extension.conditions.query;
+package com.kovizone.mybatispp.core.conditions.query;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
-import com.kovizone.mybatispp.core.conditions.query.ExtendQuery;
-import com.kovizone.mybatispp.extension.conditions.ChainWrapper;
+import com.kovizone.mybatispp.core.conditions.ChainWrapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +14,7 @@ import java.util.Optional;
  * @see com.baomidou.mybatisplus.extension.conditions.query.ChainQuery
  * @since 2022/10/10
  */
-public interface ChainQuery<T, W extends Wrapper<T> & ExtendQuery<T, W>, Children> extends ChainWrapper<T, W, Children> {
+public interface ChainQuery<T, Children> extends ChainWrapper<T, Children> {
 
     /**
      * 获取集合

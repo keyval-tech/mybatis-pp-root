@@ -3,7 +3,9 @@ package com.kovizone.mybatispp.core.mapper;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.kovizone.mybatispp.core.conditions.query.QueryChainWrapper;
 import com.kovizone.mybatispp.core.conditions.query.QueryWrapper;
+import com.kovizone.mybatispp.core.conditions.update.UpdateChainWrapper;
 import com.kovizone.mybatispp.core.conditions.update.UpdateWrapper;
 import com.kovizone.mybatispp.core.toolkit.CollUtil;
 import com.kovizone.mybatispp.core.toolkit.MapperUtil;
@@ -21,6 +23,14 @@ import java.util.function.Consumer;
  * @since 2022/09/29
  */
 public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.BaseMapper<T> {
+
+    default QueryChainWrapper<T> queryWrapper() {
+        return new QueryChainWrapper<>(this);
+    }
+
+    default UpdateChainWrapper<T> updateWrapper() {
+        return new UpdateChainWrapper<>(this);
+    }
 
     // 重载selectById
 

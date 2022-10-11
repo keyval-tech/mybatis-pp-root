@@ -1,0 +1,19 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.4'
+    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
+    id 'java'
+}
+
+dependencies {
+    api project(":mybatis-pp-core")
+
+    implementation 'mysql:mysql-connector-java:8.0.30'
+    implementation 'com.baomidou:mybatis-plus-boot-starter:3.5.2'
+    implementation 'com.alibaba:druid-spring-boot-starter:1.2.13-SNSAPSHOT'
+    implementation 'org.springframework.boot:spring-boot-starter:2.7.4'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.4'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

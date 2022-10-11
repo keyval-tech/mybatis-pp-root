@@ -8,9 +8,9 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.24/13a394eed5c4f9efb2a6d956e2086f1d81e857d9/lombok-1.18.24.jar" />
         </processorPath>
         <module name="mybatis-pp-root.mybatis-pp-core.main" />
-        <module name="mybatis-pp-root.mybatis-pp-extension.test" />
+        <module name="mybatis-pp-root.mybatis-pp-demo.test" />
         <module name="mybatis-pp-root.mybatis-pp-annotation.test" />
-        <module name="mybatis-pp-root.mybatis-pp-extension.main" />
+        <module name="mybatis-pp-root.mybatis-pp-demo.main" />
         <module name="mybatis-pp-root.mybatis-pp-annotation.main" />
         <module name="mybatis-pp-root.mybatis-pp-core.test" />
       </profile>

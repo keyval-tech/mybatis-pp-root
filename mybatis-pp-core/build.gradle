@@ -1,6 +1,6 @@
 dependencies {
     api project(":mybatis-pp-annotation")
 
-    implementation "${lib.mybatisPlusCore}"
+    implementation "${lib.mybatisPlusExtension}"
     implementation "${lib.springExpression}"
 }

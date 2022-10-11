@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.baomidou.mybatisplus.core.enums.SqlKeyword.ORDER_BY;
+import static java.util.stream.Collectors.joining;
 
 /**
  * AbstractWrapperExt
@@ -51,8 +52,8 @@ public abstract class AbstractExtendWrapper<T, Children extends AbstractExtendWr
      * @param columns 属性GETTER集
      * @return 字段名
      */
-    protected String[] columnToString(SFunction<T, ?>[] columns) {
-        return columnToString(true, columns);
+    protected String columnsToString(SFunction<T, ?>[] columns) {
+        return Arrays.stream(columns).map(this::columnToString).collect(joining(StringPool.COMMA));
     }
 
     /**
@@ -74,8 +75,8 @@ public abstract class AbstractExtendWrapper<T, Children extends AbstractExtendWr
      * @param columns    属性GETTER集
      * @return 字段名
      */
-    protected String[] columnToString(boolean onlyColumn, SFunction<T, ?>[] columns) {
-        return Arrays.stream(columns).map(e -> columnToString(onlyColumn, e)).toArray(String[]::new);
+    protected String columnsToString(boolean onlyColumn, SFunction<T, ?>[] columns) {
+        return Arrays.stream(columns).map(e -> columnToString(onlyColumn, e)).collect(joining(StringPool.COMMA));
     }
 
     /**
@@ -105,8 +106,7 @@ public abstract class AbstractExtendWrapper<T, Children extends AbstractExtendWr
 
     private ColumnCache getColumnCache(String fieldName, Class<?> lambdaClass) {
         ColumnCache columnCache = columnMap.get(LambdaUtils.formatKey(fieldName));
-        Assert.notNull(columnCache, "can not find lambda cache for this property [%s] of entity [%s]",
-                fieldName, lambdaClass.getName());
+        Assert.notNull(columnCache, "can not find lambda cache for this property [%s] of entity [%s]", fieldName, lambdaClass.getName());
         return columnCache;
     }
 
@@ -312,7 +312,7 @@ public abstract class AbstractExtendWrapper<T, Children extends AbstractExtendWr
     @Override
     public final Children groupBy(boolean condition, SFunction<T, ?> column, SFunction<T, ?>... columns) {
         if (condition) {
-            return groupBy(columnToString(column), columnToString(columns));
+            return groupBy(columnToString(column), columnsToString(columns));
         }
         return typedThis;
     }
@@ -345,7 +345,7 @@ public abstract class AbstractExtendWrapper<T, Children extends AbstractExtendWr
     @Override
     public final Children orderBy(boolean condition, boolean isAsc, SFunction<T, ?> column, SFunction<T, ?>... columns) {
         if (condition) {
-            return orderBy(true, isAsc, columnToString(column), columnToString(columns));
+            return orderBy(true, isAsc, columnToString(column), columnsToString(columns));
         }
         return typedThis;
     }

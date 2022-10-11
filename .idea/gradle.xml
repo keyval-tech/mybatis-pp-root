@@ -11,7 +11,19 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/mybatis-pp-annotation" />
             <option value="$PROJECT_DIR$/mybatis-pp-core" />
-            <option value="$PROJECT_DIR$/mybatis-pp-extension" />
+            <option value="$PROJECT_DIR$/mybatis-pp-demo" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/mybatis-pp-demo" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/mybatis-pp-annotation" />
+            <option value="$PROJECT_DIR$/mybatis-pp-core" />
+            <option value="$PROJECT_DIR$/mybatis-pp-demo" />
           </set>
         </option>
       </GradleProjectSettings>

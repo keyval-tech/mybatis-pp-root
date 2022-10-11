@@ -49,4 +49,5 @@ public interface ExtendJoin<Children> extends Join<Children> {
      * @return children
      */
     Children limit(boolean condition, Number offset, Number limit);
+
 }

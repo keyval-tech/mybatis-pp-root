@@ -1,9 +1,9 @@
-package com.kovizone.mybatispp.extension.conditions.update;
+package com.kovizone.mybatispp.core.conditions.update;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
-import com.kovizone.mybatispp.core.conditions.update.ExtendUpdate;
-import com.kovizone.mybatispp.extension.conditions.ChainWrapper;
+import com.kovizone.mybatispp.core.conditions.AbstractExtendWrapper;
+import com.kovizone.mybatispp.core.conditions.ChainWrapper;
 
 /**
  * ChainUpdate
@@ -12,7 +12,7 @@ import com.kovizone.mybatispp.extension.conditions.ChainWrapper;
  * @see com.baomidou.mybatisplus.extension.conditions.update.ChainUpdate
  * @since 2022/10/10
  */
-public interface ChainUpdate<T, W extends Wrapper<T> & ExtendUpdate<T, W>, Children> extends ChainWrapper<T, W, Children> {
+public interface ChainUpdate<T, Children extends AbstractExtendWrapper<T, Children>> extends ChainWrapper<T, Children> {
 
     /**
      * 更新数据
@@ -30,7 +30,7 @@ public interface ChainUpdate<T, W extends Wrapper<T> & ExtendUpdate<T, W>, Child
      * @return 是否成功
      */
     default boolean update(T entity) {
-        return SqlHelper.retBool(getBaseMapper().update(entity, getWrapper()));
+        return SqlHelper.retBool(getBaseMapper().update(entity, (Wrapper<T>) this));
     }
 
     /**
@@ -39,6 +39,6 @@ public interface ChainUpdate<T, W extends Wrapper<T> & ExtendUpdate<T, W>, Child
      * @return 是否成功
      */
     default boolean remove() {
-        return SqlHelper.retBool(getBaseMapper().delete(getWrapper()));
+        return SqlHelper.retBool(getBaseMapper().delete((Wrapper<T>) this));
     }
 }
