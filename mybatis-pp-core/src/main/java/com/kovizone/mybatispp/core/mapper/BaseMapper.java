@@ -2,7 +2,9 @@ package com.kovizone.mybatispp.core.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.kovizone.mybatispp.core.conditions.query.ChainQuery;
 import com.kovizone.mybatispp.core.conditions.query.QueryChainWrapper;
 import com.kovizone.mybatispp.core.conditions.query.QueryWrapper;
 import com.kovizone.mybatispp.core.conditions.update.UpdateChainWrapper;
@@ -10,6 +12,8 @@ import com.kovizone.mybatispp.core.conditions.update.UpdateWrapper;
 import com.kovizone.mybatispp.core.toolkit.CollUtil;
 import com.kovizone.mybatispp.core.toolkit.MapperUtil;
 import com.kovizone.mybatispp.core.toolkit.ObjectUtil;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -31,6 +35,9 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
     default UpdateChainWrapper<T> updateWrapper() {
         return new UpdateChainWrapper<>(this);
     }
+
+    @Select("SELECT ${ew.sqlSelect} FROM ${ew.sqlFrom} ${ew.customSqlSegment}")
+    <W extends ChainQuery<T, ?>> List<T> selectJoinList(@Param(Constants.WRAPPER) W wrapper);
 
     // 重载selectById
 

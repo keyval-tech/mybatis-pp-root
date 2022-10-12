@@ -2,6 +2,8 @@ package com.kovizone.mybatispp.core.conditions;
 
 import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.enums.SqlKeyword;
+import com.baomidou.mybatisplus.core.metadata.TableInfo;
+import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.core.toolkit.Assert;
 import com.baomidou.mybatisplus.core.toolkit.LambdaUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
@@ -34,7 +36,10 @@ public abstract class AbstractExtendWrapper<T, Children extends AbstractExtendWr
         implements ExtendCompare<T, Children>, ExtendNested<Children, Children>, ExtendJoin<Children>, ExtendFunc<T, Children> {
 
     private Map<String, ColumnCache> columnMap = null;
+
     private boolean initColumnMap = false;
+
+    private TableInfo tableInfo;
 
     /**
      * 获取字段名
@@ -65,7 +70,7 @@ public abstract class AbstractExtendWrapper<T, Children extends AbstractExtendWr
      */
     protected String columnToString(boolean onlyColumn, SFunction<T, ?> column) {
         ColumnCache columnCache = getColumnCache(column);
-        return onlyColumn ? columnCache.getColumn() : columnCache.getColumnSelect();
+        return columnToString(onlyColumn ? columnCache.getColumn() : columnCache.getColumnSelect());
     }
 
     /**
@@ -485,5 +490,15 @@ public abstract class AbstractExtendWrapper<T, Children extends AbstractExtendWr
             return last(String.format("LIMIT %s%s", (offset == null ? StringPool.EMPTY : (formatParam(null, offset) + StringPool.COMMA)), formatParam(null, limit)));
         }
         return typedThis;
+    }
+
+    protected TableInfo getTableInfo() {
+        if (tableInfo == null) {
+            Class<T> entityClass = getEntityClass();
+            if (entityClass != null) {
+                tableInfo = TableInfoHelper.getTableInfo(entityClass);
+            }
+        }
+        return tableInfo;
     }
 }

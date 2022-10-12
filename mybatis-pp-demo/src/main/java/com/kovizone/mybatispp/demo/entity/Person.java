@@ -12,7 +12,7 @@ import lombok.Data;
  * @since 2022/09/28
  */
 @Data
-@TableName("person p")
+@TableName("person")
 public class Person {
 
     @TableId("id")

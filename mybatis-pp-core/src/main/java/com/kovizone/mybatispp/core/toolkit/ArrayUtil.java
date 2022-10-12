@@ -11,6 +11,15 @@ import java.util.Collection;
  */
 public class ArrayUtil {
 
+    public static <T> boolean isEmpty(T[] arr) {
+        return arr == null || arr.length == 0;
+    }
+
+
+    public static <T> boolean isNotEmpty(T[] arr) {
+        return !isEmpty(arr);
+    }
+
     public static Object[] parse(Object array) {
         if (array == null) {
             return null;

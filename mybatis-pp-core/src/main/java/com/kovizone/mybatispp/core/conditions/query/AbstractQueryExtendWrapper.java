@@ -57,8 +57,8 @@ public abstract class AbstractQueryExtendWrapper<T, Children extends AbstractQue
      * @param entityClass 本不应该需要的
      */
     protected AbstractQueryExtendWrapper(T entity, Class<T> entityClass, AtomicInteger paramNameSeq,
-                                       Map<String, Object> paramNameValuePairs, MergeSegments mergeSegments, SharedString paramAlias,
-                                       SharedString lastSql, SharedString sqlComment, SharedString sqlFirst) {
+                                         Map<String, Object> paramNameValuePairs, MergeSegments mergeSegments, SharedString paramAlias,
+                                         SharedString lastSql, SharedString sqlComment, SharedString sqlFirst) {
         super.setEntity(entity);
         super.setEntityClass(entityClass);
         this.paramNameSeq = paramNameSeq;

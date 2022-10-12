@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.kovizone.mybatispp.core.conditions.query.ChainQuery;
 import com.kovizone.mybatispp.core.mapper.BaseMapper;
+import com.kovizone.mybatispp.core.toolkit.MapperUtil;
 import lombok.Getter;
 
 import java.util.List;
@@ -39,6 +40,7 @@ public class UpdateChainWrapper<T> extends AbstractUpdateExtendWrapper<T, Update
     public UpdateChainWrapper(BaseMapper<T> baseMapper) {
         super();
         this.baseMapper = baseMapper;
+        setEntityClass(MapperUtil.extractModelClass(baseMapper));
     }
 
     /**

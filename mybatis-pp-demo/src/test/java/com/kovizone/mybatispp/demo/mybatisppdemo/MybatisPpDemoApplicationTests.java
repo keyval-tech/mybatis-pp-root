@@ -20,12 +20,20 @@ class MybatisPpDemoApplicationTests {
 
     @Test
     void contextLoads() {
-        personMapper.selectAll();
-    }
-
-    @Test
-    void contextLoads2() {
         personMapper.queryWrapper()
-                .inWrapper(Person::getJobId, jobMapper.queryWrapper().eq(Job::getId, 1));
+                .leftJoin(jobMapper, on -> on
+                        .eqColumn(Person::getJobId, Job::getId)
+                        .eqColumn(Person::getName, Job::getName)
+                        .apply("job.id > 0")
+                )
+                .and(w -> w
+                        .eq(Person::getId, 1)
+                        .or()
+                        .where(personMapper, perssonWrapper -> perssonWrapper.le(Person::getId, 1))
+                        .or()
+                        .where(jobMapper, jobWrapper -> jobWrapper.ge(Job::getId, 2))
+                )
+                .eq(Person::getId, 3)
+                .joinList();
     }
 }
