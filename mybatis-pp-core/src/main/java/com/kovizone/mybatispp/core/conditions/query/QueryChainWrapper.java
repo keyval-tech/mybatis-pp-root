@@ -149,7 +149,7 @@ public class QueryChainWrapper<T> extends AbstractQueryExtendWrapper<T, QueryCha
     }
 
     @Override
-    public <T2> QueryChainWrapper<T> where(boolean condition, BaseMapper<T2> mapper2, Consumer<QueryChainWrapper<T2>> whereConsumer) {
+    public <T2> QueryChainWrapper<T> func(boolean condition, BaseMapper<T2> mapper2, Consumer<QueryChainWrapper<T2>> whereConsumer) {
         if (condition && mapper2 != null && whereConsumer != null) {
             QueryChainWrapper<T2> t2QueryChainWrapper = getWrapper(mapper2);
             whereConsumer.accept(t2QueryChainWrapper);

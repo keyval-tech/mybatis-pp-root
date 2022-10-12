@@ -14,6 +14,7 @@ import com.kovizone.mybatispp.core.conditions.interfaces.ExtendCompare;
 import com.kovizone.mybatispp.core.conditions.interfaces.ExtendFunc;
 import com.kovizone.mybatispp.core.conditions.interfaces.ExtendJoin;
 import com.kovizone.mybatispp.core.conditions.interfaces.ExtendNested;
+import com.kovizone.mybatispp.core.toolkit.ArrayUtil;
 import org.apache.ibatis.reflection.property.PropertyNamer;
 
 import java.util.Arrays;
@@ -317,7 +318,10 @@ public abstract class AbstractExtendWrapper<T, Children extends AbstractExtendWr
     @Override
     public final Children groupBy(boolean condition, SFunction<T, ?> column, SFunction<T, ?>... columns) {
         if (condition) {
-            return groupBy(columnToString(column), columnsToString(columns));
+            if (ArrayUtil.isEmpty(columns)) {
+                return groupBy(true, columnToString(column));
+            }
+            return groupBy(true, columnToString(column), columnsToString(columns));
         }
         return typedThis;
     }
@@ -350,6 +354,9 @@ public abstract class AbstractExtendWrapper<T, Children extends AbstractExtendWr
     @Override
     public final Children orderBy(boolean condition, boolean isAsc, SFunction<T, ?> column, SFunction<T, ?>... columns) {
         if (condition) {
+            if (ArrayUtil.isEmpty(columns)) {
+                return orderBy(true, isAsc, columnToString(column));
+            }
             return orderBy(true, isAsc, columnToString(column), columnsToString(columns));
         }
         return typedThis;

@@ -3,12 +3,10 @@ package com.kovizone.mybatispp.core.conditions.query;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import com.kovizone.mybatispp.core.conditions.ChainWrapper;
-import com.kovizone.mybatispp.core.conditions.OnSql;
-import com.kovizone.mybatispp.core.mapper.BaseMapper;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 /**
  * ChainQuery
@@ -77,5 +75,9 @@ public interface ChainQuery<T, Children> extends ChainWrapper<T, Children> {
 
     default List<T> joinList() {
         return getBaseMapper().selectJoinList(this);
+    }
+
+    default List<Map<String, Object>> joinMaps() {
+        return getBaseMapper().selectJoinMaps(this);
     }
 }

@@ -205,12 +205,12 @@ public interface ChainJoin<T1, Children> {
     /**
      * ignore
      */
-    default <T2> Children where(BaseMapper<T2> mapper2, Consumer<QueryChainWrapper<T2>> whereConsumer) {
-        return where(true, mapper2, whereConsumer);
+    default <T2> Children func(BaseMapper<T2> mapper2, Consumer<QueryChainWrapper<T2>> whereConsumer) {
+        return func(true, mapper2, whereConsumer);
     }
 
     /**
-     * 描述基于联表的查询条件
+     * 切换选择包装类
      *
      * @param condition     执行条件
      * @param mapper2       联表的Mapper
@@ -218,5 +218,5 @@ public interface ChainJoin<T1, Children> {
      * @param <T2>          联表实体类
      * @return children
      */
-    <T2> Children where(boolean condition, BaseMapper<T2> mapper2, Consumer<QueryChainWrapper<T2>> whereConsumer);
+    <T2> Children func(boolean condition, BaseMapper<T2> mapper2, Consumer<QueryChainWrapper<T2>> whereConsumer);
 }

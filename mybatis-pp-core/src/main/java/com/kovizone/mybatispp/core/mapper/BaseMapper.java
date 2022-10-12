@@ -18,6 +18,7 @@ import org.apache.ibatis.annotations.Select;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -38,6 +39,9 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
 
     @Select("SELECT ${ew.sqlSelect} FROM ${ew.sqlFrom} ${ew.customSqlSegment}")
     <W extends ChainQuery<T, ?>> List<T> selectJoinList(@Param(Constants.WRAPPER) W wrapper);
+
+    @Select("SELECT ${ew.sqlSelect} FROM ${ew.sqlFrom} ${ew.customSqlSegment}")
+    <W extends ChainQuery<T, ?>> List<Map<String, Object>> selectJoinMaps(@Param(Constants.WRAPPER) W wrapper);
 
     // 重载selectById
 
