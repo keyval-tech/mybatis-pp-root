@@ -9,5 +9,5 @@ import com.kovizone.mybatispp.demo.entity.Hobby;
  * @author KV
  * @since 2022/10/12
  */
-public interface HoppyMapper extends BaseMapper<Hobby> {
+public interface HobbyMapper extends BaseMapper<Hobby> {
 }

@@ -73,11 +73,30 @@ public interface ChainQuery<T, Children> extends ChainWrapper<T, Children> {
         return getBaseMapper().selectPage(page, getWrapper());
     }
 
-    default List<T> joinList() {
-        return getBaseMapper().selectJoinList(this);
+    /**
+     * 获取Map集
+     *
+     * @return Map集
+     */
+    default List<Map<String, Object>> maps() {
+        return getBaseMapper().selectMaps(getWrapper());
     }
 
+    /**
+     * 联查获取对象集
+     *
+     * @return 对象集
+     */
+    default List<T> joinList() {
+        return getBaseMapper().selectJoinList(getWrapper());
+    }
+
+    /**
+     * 联查获取Map集
+     *
+     * @return Map集
+     */
     default List<Map<String, Object>> joinMaps() {
-        return getBaseMapper().selectJoinMaps(this);
+        return getBaseMapper().selectJoinMaps(getWrapper());
     }
 }

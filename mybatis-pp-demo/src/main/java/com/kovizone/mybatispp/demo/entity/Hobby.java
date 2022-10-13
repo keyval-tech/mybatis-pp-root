@@ -6,14 +6,14 @@ import com.baomidou.mybatisplus.annotation.Version;
 import lombok.Data;
 
 /**
- * Job
+ * Hobby
  *
  * @author KV
  * @since 2022/10/11
  */
 @Data
-@TableName("job")
-public class Job {
+@TableName("hobby")
+public class Hobby {
 
     @TableId("id")
     private Integer id;

@@ -23,7 +23,7 @@ public class OnSql<T1, T2> {
     }
 
     public OnSql<T1, T2> eqColumn(SFunction<T1, ?> column1, SFunction<T2, ?> column2) {
-        onList.add(new LambdaColumn<T1, T2>(column1, column2));
+        onList.add(new LambdaColumn<>(column1, column2));
         return this;
     }
 

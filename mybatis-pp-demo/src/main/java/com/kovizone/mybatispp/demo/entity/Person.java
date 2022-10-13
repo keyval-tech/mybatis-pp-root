@@ -14,7 +14,7 @@ import lombok.Data;
  */
 @Data
 @TableName("person")
-public class Pers {
+public class Person {
 
     @TableId("id")
     private Integer id;

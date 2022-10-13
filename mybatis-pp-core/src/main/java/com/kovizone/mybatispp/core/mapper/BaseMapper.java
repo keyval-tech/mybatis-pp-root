@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import com.kovizone.mybatispp.core.conditions.query.ChainQuery;
 import com.kovizone.mybatispp.core.conditions.query.QueryChainWrapper;
 import com.kovizone.mybatispp.core.conditions.query.QueryWrapper;
 import com.kovizone.mybatispp.core.conditions.update.UpdateChainWrapper;
@@ -29,19 +28,62 @@ import java.util.function.Consumer;
  */
 public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.BaseMapper<T> {
 
-    default QueryChainWrapper<T> queryWrapper() {
+    /**
+     * 生成{@link QueryWrapper}
+     *
+     * @return QueryWrapper:
+     */
+    default QueryWrapper<T> query() {
+        return new QueryWrapper<>();
+    }
+
+    /**
+     * 生成{@link UpdateWrapper}
+     *
+     * @return UpdateWrapper
+     */
+    default UpdateWrapper<T> update() {
+        return new UpdateWrapper<>();
+    }
+
+    /**
+     * 生成{@link QueryChainWrapper}
+     *
+     * @return QueryChainWrapper
+     */
+    default QueryChainWrapper<T> queryChain() {
         return new QueryChainWrapper<>(this);
     }
 
-    default UpdateChainWrapper<T> updateWrapper() {
+    /**
+     * 生成{@link UpdateChainWrapper}
+     *
+     * @return UpdateChainWrapper
+     */
+    default UpdateChainWrapper<T> updateChain() {
         return new UpdateChainWrapper<>(this);
     }
 
-    @Select("SELECT ${ew.sqlSelect} FROM ${ew.sqlFrom} ${ew.customSqlSegment}")
-    <W extends ChainQuery<T, ?>> List<T> selectJoinList(@Param(Constants.WRAPPER) W wrapper);
+    /**
+     * 联查
+     * <p>
+     * 不支持@TableLogic
+     *
+     * @param wrapper 查询条件
+     * @return 结果对象集
+     */
+    List<T> selectJoinList(@Param(Constants.WRAPPER) Wrapper<T> wrapper);
 
+    /**
+     * 联查
+     * <p>
+     * 不支持@TableLogic
+     *
+     * @param wrapper 查询条件
+     * @return 结果Map集
+     */
     @Select("SELECT ${ew.sqlSelect} FROM ${ew.sqlFrom} ${ew.customSqlSegment}")
-    <W extends ChainQuery<T, ?>> List<Map<String, Object>> selectJoinMaps(@Param(Constants.WRAPPER) W wrapper);
+    List<Map<String, Object>> selectJoinMaps(@Param(Constants.WRAPPER) Wrapper<T> wrapper);
 
     // 重载selectById
 
