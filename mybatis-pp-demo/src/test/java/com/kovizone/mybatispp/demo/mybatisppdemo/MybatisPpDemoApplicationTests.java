@@ -25,9 +25,13 @@ class MybatisPpDemoApplicationTests {
     @Test
     void contextLoads() {
         List<Map<String, Object>> maps = personMapper.queryChain()
-                .eq(Person::getId, 1)
-                .leftJoin(Job.class, on -> on.eqColumn(Person::getJobId, Job::getId))
+
+                .leftJoin(Job.class)
                 .leftJoin(Hobby.class, on -> on.eqColumn(Person::getHobbyId, Hobby::getId))
+
+                .eq(Person::getId, 1)
+                .func(Job.class, w -> w.eq(Job::getId, 2))
+                .func(Hobby.class, w -> w.eq(Hobby::getId, 3))
                 .joinMaps();
 
         System.out.println(JSONUtil.toJsonStr(maps));

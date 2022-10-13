@@ -1,6 +1,8 @@
 package com.kovizone.mybatispp.core.conditions.query;
 
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.kovizone.mybatispp.annotation.TableJoin;
+import com.kovizone.mybatispp.annotation.TableJoins;
 import com.kovizone.mybatispp.core.conditions.OnSql;
 import com.kovizone.mybatispp.core.enums.JoinType;
 
@@ -55,6 +57,27 @@ public interface ExtendQuery<T1, Children> extends LambdaQuery<T1, Children> {
     /**
      * ignore
      */
+    default <T2> Children leftJoin(Class<T2> model2) {
+        return leftJoin(true, model2);
+    }
+
+    /**
+     * 左联查
+     * <p>
+     * model2需要标注{@link TableJoin}或{@link TableJoins}
+     *
+     * @param condition 执行条件
+     * @param model2    联表的实体
+     * @param <T2>      联表实体类
+     * @return children
+     */
+    default <T2> Children leftJoin(boolean condition, Class<T2> model2) {
+        return join(condition, JoinType.LEFT_JOIN, model2, (String[]) null);
+    }
+
+    /**
+     * ignore
+     */
     default <T2> Children leftJoin(Class<T2> model2, Consumer<OnSql<T1, T2>> onConsumer) {
         return leftJoin(true, model2, onConsumer);
     }
@@ -95,6 +118,27 @@ public interface ExtendQuery<T1, Children> extends LambdaQuery<T1, Children> {
     /**
      * ignore
      */
+    default <T2> Children rightJoin(Class<T2> model2) {
+        return rightJoin(true, model2);
+    }
+
+    /**
+     * 右联查
+     * <p>
+     * model2需要标注{@link TableJoin}或{@link TableJoins}
+     *
+     * @param condition 执行条件
+     * @param model2    联表的实体
+     * @param <T2>      联表实体类
+     * @return children
+     */
+    default <T2> Children rightJoin(boolean condition, Class<T2> model2) {
+        return join(condition, JoinType.RIGHT_JOIN, model2, (String[]) null);
+    }
+
+    /**
+     * ignore
+     */
     default <T2> Children rightJoin(Class<T2> model2, Consumer<OnSql<T1, T2>> onConsumer) {
         return rightJoin(true, model2, onConsumer);
     }
@@ -130,6 +174,27 @@ public interface ExtendQuery<T1, Children> extends LambdaQuery<T1, Children> {
      */
     default <T2> Children rightJoin(boolean condition, Class<T2> model2, String... onSql) {
         return join(condition, JoinType.RIGHT_JOIN, model2, onSql);
+    }
+
+    /**
+     * ignore
+     */
+    default <T2> Children innerJoin(Class<T2> model2) {
+        return innerJoin(true, model2);
+    }
+
+    /**
+     * 内联查
+     * <p>
+     * model2需要标注{@link TableJoin}或{@link TableJoins}
+     *
+     * @param condition 执行条件
+     * @param model2    联表的实体
+     * @param <T2>      联表实体类
+     * @return children
+     */
+    default <T2> Children innerJoin(boolean condition, Class<T2> model2) {
+        return join(condition, JoinType.INNER_JOIN, model2, (String[]) null);
     }
 
     /**

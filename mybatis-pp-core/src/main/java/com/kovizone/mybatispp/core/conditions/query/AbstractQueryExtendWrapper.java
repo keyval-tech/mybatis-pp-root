@@ -9,10 +9,13 @@ import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.kovizone.mybatispp.annotation.TableJoin;
+import com.kovizone.mybatispp.annotation.TableJoins;
 import com.kovizone.mybatispp.core.conditions.AbstractExtendWrapper;
 import com.kovizone.mybatispp.core.conditions.OnSql;
 import com.kovizone.mybatispp.core.enums.JoinType;
 import com.kovizone.mybatispp.core.toolkit.ArrayUtil;
+import com.kovizone.mybatispp.core.toolkit.ReflectUtil;
 import com.kovizone.mybatispp.core.toolkit.StrUtil;
 
 import java.util.Arrays;
@@ -133,45 +136,75 @@ public abstract class AbstractQueryExtendWrapper<T, Children extends AbstractQue
 
     @Override
     public <T2> Children join(boolean condition, JoinType joinType, Class<T2> model2, Consumer<OnSql<T, T2>> onSqlConsumer) {
-        if (condition && model2 != null && onSqlConsumer != null) {
-            AbstractQueryExtendWrapper<T2, ?> t2QueryChainWrapper = getQueryWrapper(model2);
-            OnSql<T, T2> onSql = new OnSql<>();
-            onSqlConsumer.accept(onSql);
-            List<OnSql.On> onList = onSql.getOnList();
-            if (!onList.isEmpty()) {
-                String[] onSqlArr = new String[onList.size()];
-                for (int i = 0; i < onList.size(); i++) {
-                    OnSql.On on = onList.get(i);
-                    if (on instanceof OnSql.StringColumn) {
-                        OnSql.StringColumn onStringColumn = ((OnSql.StringColumn) on);
-                        onSqlArr[i] = String.format("%s=%s", columnToString(onStringColumn.getColumn1()), t2QueryChainWrapper.columnToString(onStringColumn.getColumn2()));
+        if (condition && model2 != null) {
+            if (onSqlConsumer != null) {
+                AbstractQueryExtendWrapper<T2, ?> t2QueryChainWrapper = getQueryWrapper(model2);
+                OnSql<T, T2> onSql = new OnSql<>();
+                onSqlConsumer.accept(onSql);
+                List<OnSql.On> onList = onSql.getOnList();
+                if (!onList.isEmpty()) {
+                    String[] onSqlArr = new String[onList.size()];
+                    for (int i = 0; i < onList.size(); i++) {
+                        OnSql.On on = onList.get(i);
+                        if (on instanceof OnSql.StringColumn) {
+                            OnSql.StringColumn onStringColumn = ((OnSql.StringColumn) on);
+                            onSqlArr[i] = String.format("%s=%s", columnToString(onStringColumn.getColumn1()), t2QueryChainWrapper.columnToString(onStringColumn.getColumn2()));
+                        }
+                        if (on instanceof OnSql.LambdaColumn) {
+                            OnSql.LambdaColumn<T, T2> onStringColumn = ((OnSql.LambdaColumn<T, T2>) on);
+                            onSqlArr[i] = String.format("%s=%s", columnToString(onStringColumn.getColumn1()), t2QueryChainWrapper.columnToString(onStringColumn.getColumn2()));
+                        }
+                        if (on instanceof OnSql.Apply) {
+                            OnSql.Apply onApply = ((OnSql.Apply) on);
+                            onSqlArr[i] = onApply.getApplySql();
+                        }
                     }
-                    if (on instanceof OnSql.LambdaColumn) {
-                        OnSql.LambdaColumn<T, T2> onStringColumn = ((OnSql.LambdaColumn<T, T2>) on);
-                        onSqlArr[i] = String.format("%s=%s", columnToString(onStringColumn.getColumn1()), t2QueryChainWrapper.columnToString(onStringColumn.getColumn2()));
-                    }
-                    if (on instanceof OnSql.Apply) {
-                        OnSql.Apply onApply = ((OnSql.Apply) on);
-                        onSqlArr[i] = onApply.getApplySql();
-                    }
+                    return join(joinType, model2, onSqlArr);
                 }
-                return join(joinType, model2, onSqlArr);
+            } else {
+                return join(joinType, model2, (String[]) null);
             }
         }
         return typedThis;
     }
 
+    protected TableJoin[] getTableJoins() {
+        Class<T> entityClass = getEntityClass();
+        if (entityClass != null) {
+            TableJoin tableJoin = ReflectUtil.getAnnotation(entityClass, TableJoin.class);
+            if (tableJoin != null) {
+                return new TableJoin[]{tableJoin};
+            }
+            TableJoins tableJoins = ReflectUtil.getAnnotation(entityClass, TableJoins.class);
+            if (tableJoins != null) {
+                return tableJoins.value();
+            }
+        }
+        return new TableJoin[]{};
+    }
+
     @Override
     public <T2> Children join(boolean condition, JoinType joinType, Class<T2> model2, String... onSqlArr) {
-        if (condition && model2 != null && ArrayUtil.isNotEmpty(onSqlArr)) {
-            if (joinType == null) {
-                joinType = JoinType.LEFT_JOIN;
+        if (condition && model2 != null) {
+            if (ArrayUtil.isEmpty(onSqlArr)) {
+                TableJoin[] tableJoins = getTableJoins();
+                for (TableJoin tableJoin : tableJoins) {
+                    if (tableJoin.join().equals(model2)) {
+                        onSqlArr = tableJoin.on();
+                        break;
+                    }
+                }
             }
-            AbstractQueryExtendWrapper<T2, ?> t2QueryChainWrapper = getQueryWrapper(model2);
-            TableInfo table2Info = t2QueryChainWrapper.getTableInfo();
-            if (table2Info != null) {
-                // LEFT JOIN %s ON %s
-                appendSqlFrom(joinType.format(table2Info.getTableName(), onSqlArr));
+            if (ArrayUtil.isNotEmpty(onSqlArr)) {
+                if (joinType == null) {
+                    joinType = JoinType.LEFT_JOIN;
+                }
+                AbstractQueryExtendWrapper<T2, ?> t2QueryChainWrapper = getQueryWrapper(model2);
+                TableInfo table2Info = t2QueryChainWrapper.getTableInfo();
+                if (table2Info != null) {
+                    // LEFT JOIN %s ON %s
+                    appendSqlFrom(joinType.format(table2Info.getTableName(), onSqlArr));
+                }
             }
         }
         return typedThis;
