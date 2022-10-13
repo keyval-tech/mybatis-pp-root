@@ -1,6 +1,7 @@
 package com.kovizone.mybatispp.demo.mybatisppdemo;
 
 import cn.hutool.json.JSONUtil;
+import com.kovizone.mybatispp.demo.entity.Hobby;
 import com.kovizone.mybatispp.demo.entity.Job;
 import com.kovizone.mybatispp.demo.entity.Person;
 import com.kovizone.mybatispp.demo.mapper.JobMapper;
@@ -23,9 +24,10 @@ class MybatisPpDemoApplicationTests {
 
     @Test
     void contextLoads() {
-        List<Map<String, Object>> maps = personMapper.queryWrapper()
+        List<Map<String, Object>> maps = personMapper.queryChain()
                 .eq(Person::getId, 1)
-                .leftJoin(jobMapper, on -> on.eqColumn(Person::getJobId, Job::getId))
+                .leftJoin(Job.class, on -> on.eqColumn(Person::getJobId, Job::getId))
+                .leftJoin(Hobby.class, on -> on.eqColumn(Person::getHobbyId, Hobby::getId))
                 .joinMaps();
 
         System.out.println(JSONUtil.toJsonStr(maps));
