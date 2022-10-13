@@ -3,6 +3,7 @@ package com.kovizone.mybatispp.demo.entity;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.Version;
+import com.kovizone.mybatispp.annotation.TableAlias;
 import lombok.Data;
 
 /**
@@ -12,6 +13,7 @@ import lombok.Data;
  * @since 2022/10/11
  */
 @Data
+@TableAlias("h")
 @TableName("hobby")
 public class Hobby {
 

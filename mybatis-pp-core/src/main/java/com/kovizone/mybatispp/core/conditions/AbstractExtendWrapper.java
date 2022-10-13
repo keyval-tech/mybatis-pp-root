@@ -15,6 +15,7 @@ import com.kovizone.mybatispp.core.conditions.interfaces.ExtendFunc;
 import com.kovizone.mybatispp.core.conditions.interfaces.ExtendJoin;
 import com.kovizone.mybatispp.core.conditions.interfaces.ExtendNested;
 import com.kovizone.mybatispp.core.toolkit.ArrayUtil;
+import lombok.Getter;
 import org.apache.ibatis.reflection.property.PropertyNamer;
 
 import java.util.Arrays;
@@ -40,6 +41,7 @@ public abstract class AbstractExtendWrapper<T, Children extends AbstractExtendWr
 
     private boolean initColumnMap = false;
 
+    @Getter
     private TableInfo tableInfo;
 
     /**
@@ -499,13 +501,22 @@ public abstract class AbstractExtendWrapper<T, Children extends AbstractExtendWr
         return typedThis;
     }
 
-    protected TableInfo getTableInfo() {
-        if (tableInfo == null) {
-            Class<T> entityClass = getEntityClass();
-            if (entityClass != null) {
-                tableInfo = TableInfoHelper.getTableInfo(entityClass);
-            }
+    @Override
+    @SuppressWarnings("unchecked")
+    public Children setEntity(T entity) {
+        if (entity != null && !entity.equals(super.getEntity())) {
+            setEntityClass((Class<T>) entity.getClass());
         }
-        return tableInfo;
+        super.setEntity(entity);
+        return typedThis;
+    }
+
+    @Override
+    public Children setEntityClass(Class<T> entityClass) {
+        if (entityClass != null && !entityClass.equals(super.getEntityClass())) {
+            this.tableInfo = TableInfoHelper.getTableInfo(entityClass);
+        }
+        super.setEntityClass(entityClass);
+        return typedThis;
     }
 }

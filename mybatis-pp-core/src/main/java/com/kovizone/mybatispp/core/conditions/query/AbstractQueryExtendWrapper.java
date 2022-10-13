@@ -9,12 +9,14 @@ import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.kovizone.mybatispp.annotation.TableAlias;
 import com.kovizone.mybatispp.annotation.TableJoin;
 import com.kovizone.mybatispp.annotation.TableJoins;
 import com.kovizone.mybatispp.core.conditions.AbstractExtendWrapper;
 import com.kovizone.mybatispp.core.conditions.OnSql;
 import com.kovizone.mybatispp.core.enums.JoinType;
 import com.kovizone.mybatispp.core.toolkit.ArrayUtil;
+import com.kovizone.mybatispp.core.toolkit.ObjectUtil;
 import com.kovizone.mybatispp.core.toolkit.ReflectUtil;
 import com.kovizone.mybatispp.core.toolkit.StrUtil;
 
@@ -45,6 +47,21 @@ public abstract class AbstractQueryExtendWrapper<T, Children extends AbstractQue
      */
     private final SharedString sqlSelect = new SharedString();
 
+    /**
+     * 表别名
+     */
+    private String tableAlias;
+
+    /**
+     * 是否联表
+     */
+    protected boolean fromJoin = false;
+
+    /**
+     * FROM片段
+     */
+    private final SharedString sqlFrom = new SharedString();
+
     public AbstractQueryExtendWrapper() {
         this((T) null);
     }
@@ -55,7 +72,7 @@ public abstract class AbstractQueryExtendWrapper<T, Children extends AbstractQue
     }
 
     public AbstractQueryExtendWrapper(Class<T> entityClass) {
-        super.setEntityClass(entityClass);
+        this.setEntityClass(entityClass);
         super.initNeed();
     }
 
@@ -63,6 +80,13 @@ public abstract class AbstractQueryExtendWrapper<T, Children extends AbstractQue
         super.setEntity(entity);
         super.initNeed();
         this.select(columns);
+    }
+
+    @Override
+    public Children setEntityClass(Class<T> entityClass) {
+        super.setEntityClass(entityClass);
+        this.tableAlias = ObjectUtil.map(ReflectUtil.getAnnotation(entityClass, TableAlias.class), TableAlias::value);
+        return typedThis;
     }
 
     /**
@@ -202,8 +226,13 @@ public abstract class AbstractQueryExtendWrapper<T, Children extends AbstractQue
                 AbstractQueryExtendWrapper<T2, ?> t2QueryChainWrapper = getQueryWrapper(model2);
                 TableInfo table2Info = t2QueryChainWrapper.getTableInfo();
                 if (table2Info != null) {
+                    String alias = ObjectUtil.map(ReflectUtil.getAnnotation(model2, TableAlias.class), TableAlias::value);
                     // LEFT JOIN %s ON %s
-                    appendSqlFrom(joinType.format(table2Info.getTableName(), onSqlArr));
+                    if (StrUtil.isEmpty(alias)) {
+                        appendSqlFrom(joinType.format(table2Info.getTableName(), onSqlArr));
+                    } else {
+                        appendSqlFrom(joinType.format(table2Info.getTableName().concat(" AS ").concat(alias), onSqlArr));
+                    }
                 }
             }
         }
@@ -237,13 +266,20 @@ public abstract class AbstractQueryExtendWrapper<T, Children extends AbstractQue
             queryWrapper = new QueryWrapper<>(modelClass);
             queryWrapper.fromJoin = true;
             // WHERE片段都接入主表的WHERE片段集
-            queryWrapper.expression = this.expression;
             queryWrapper.paramNameSeq = this.paramNameSeq;
             queryWrapper.paramNameValuePairs = this.paramNameValuePairs;
+            queryWrapper.expression = this.expression;
 
             joinWrapperCache.put(modelClass, queryWrapper);
         }
         return queryWrapper;
+    }
+
+    protected String getTableAlias() {
+        if (tableAlias == null) {
+            tableAlias = ObjectUtil.map(this, AbstractQueryExtendWrapper::getTableInfo, TableInfo::getTableName);
+        }
+        return tableAlias;
     }
 
     @Override
@@ -271,27 +307,29 @@ public abstract class AbstractQueryExtendWrapper<T, Children extends AbstractQue
                 && !column.contains(StringPool.RIGHT_BRACKET)) {
             TableInfo tableInfo = getTableInfo();
             if (tableInfo != null) {
-                return tableInfo.getTableName().concat(StringPool.DOT).concat(super.columnToString(column));
+                return getTableAlias().concat(StringPool.DOT).concat(super.columnToString(column));
             }
         }
         return super.columnToString(column);
     }
 
-    protected boolean fromJoin = false;
-
-    private final SharedString sqlFrom = new SharedString();
-
     public String getSqlFrom() {
         if (StrUtil.isEmpty(sqlFrom.getStringValue())) {
             TableInfo tableInfo = getTableInfo();
             if (tableInfo != null) {
-                sqlFrom.setStringValue(tableInfo.getTableName());
+                String tableName = tableInfo.getTableName();
+                String alias = getTableAlias();
+                if (tableName.equals(alias)) {
+                    sqlFrom.setStringValue(tableName);
+                } else {
+                    sqlFrom.setStringValue(tableName.concat(" AS ").concat(alias));
+                }
             }
         }
         return sqlFrom.getStringValue();
     }
 
-    public void appendSqlFrom(String sqlFrom) {
+    protected void appendSqlFrom(String sqlFrom) {
         if (StrUtil.isNotEmpty(sqlFrom)) {
             this.sqlFrom.setStringValue(getSqlFrom().concat(StringPool.SPACE).concat(sqlFrom));
         }
