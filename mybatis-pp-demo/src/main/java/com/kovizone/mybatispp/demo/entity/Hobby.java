@@ -1,35 +1,25 @@
 package com.kovizone.mybatispp.demo.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.Version;
 import lombok.Data;
 
 /**
- * Person
+ * Job
  *
  * @author KV
- * @since 2022/09/28
+ * @since 2022/10/11
  */
 @Data
-@TableName("person")
-public class Pers {
+@TableName("job")
+public class Job {
 
     @TableId("id")
     private Integer id;
 
     private String name;
 
-    private Integer jobId;
-
-    private Integer hobbyId;
-
-    private Integer score;
-
     @Version
     private Integer version;
-
-    @TableLogic(delval = "1", value = "0")
-    private Integer deleted;
 }
