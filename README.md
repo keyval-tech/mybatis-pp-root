@@ -2,13 +2,11 @@
 
 Mybatis-Plus的增强，所以取名Mybatis-PP，在MP基础上扩展，支持联表简化操作。
 
-# 功能增强和快速开始
+# 快速开始
 
-## 1. 包含Mybatis-Plus完整功能，不做修改
+## 1. Wrapper扩展
 
-## 2. Wrapper功能扩展
-
-### 2.1 Lambda字段和String字段混用
+### 1.1 Lambda字段和String字段混用
 
 ```java
 import com.kovizone.mybatispp.core.mapper.BaseMapper;
@@ -46,9 +44,9 @@ class Tests {
 }
 ```
 
-### 2.1 新增查询条件类方法
+### 1.1 新增查询条件类方法
 
-#### 2.1.1 binary 二进制匹配
+#### 1.1.1 binary 二进制匹配
 
 ```java
 class Tests {
@@ -61,7 +59,7 @@ class Tests {
 }
 ```
 
-#### 2.1.2 regexp 正则表达式匹配
+#### 1.1.2 regexp 正则表达式匹配
 
 ```java
 class Tests {
@@ -74,7 +72,7 @@ class Tests {
 }
 ```
 
-#### 2.1.3 likeSql 自定义LIKE
+#### 1.1.3 likeSql 自定义LIKE
 
 ```java
 class Tests {
@@ -87,7 +85,7 @@ class Tests {
 }
 ```
 
-#### 2.1.4 orderBySql 自定义ORDER BY
+#### 1.1.4 orderBySql 自定义ORDER BY
 
 ```java
 class Tests {
@@ -100,7 +98,7 @@ class Tests {
 }
 ```
 
-#### 2.1.5 orderByField 根据指定字段值顺序排序
+#### 1.1.5 orderByField 根据指定字段值顺序排序
 
 ```java
 class Tests {
@@ -113,7 +111,7 @@ class Tests {
 }
 ```
 
-#### 2.1.6 isEmpty 为NULL或为空字符串
+#### 1.1.6 isEmpty 为NULL或为空字符串
 
 ```java
 class Tests {
@@ -126,7 +124,7 @@ class Tests {
 }
 ```
 
-#### 2.1.7 neOrIsNull 不等于或为空
+#### 1.1.7 neOrIsNull 不等于或为空
 
 ```java
 class Tests {
@@ -139,7 +137,7 @@ class Tests {
 }
 ```
 
-#### 2.1.8 notInOrIsNull 不包括或为空
+#### 1.1.8 notInOrIsNull 不包括或为空
 
 ```java
 class Tests {
@@ -153,9 +151,9 @@ class Tests {
 }
 ```
 
-### 2.2 新增查询结果类方法
+### 1.2 新增查询结果类方法
 
-#### 2.2.1 distinct 去重
+#### 1.2.1 distinct 去重
 
 ```java
 class Tests {
@@ -169,42 +167,10 @@ class Tests {
 }
 ```
 
-#### 2.2.1 leftJoin/rightJoin/innerJoin/fullJoin 左、右、内、全联查
+#### 1.2.1 leftJoin/rightJoin/innerJoin/fullJoin 左、右、内、全联查
 
 ```java
 class Tests {
-
-    @Data
-    @TableName("person")
-    public static class Person {
-
-        @TableId("id")
-        private Integer id;
-
-        private Integer jobId;
-    }
-
-    @Data
-    @TableName("job")
-    public static class Job {
-
-        @TableId("id")
-        private Integer id;
-
-        private String name;
-    }
-
-    @Mapper
-    public interface PersonMapper extends BaseMapper<Person> {
-    }
-
-    @Mapper
-    public interface JobMapper extends BaseMapper<Job> {
-    }
-
-    @Resource
-    private PersonMapper personMapper;
-
     @Test
     public void test() {
         // 需要注入实体类型
@@ -223,9 +189,9 @@ class Tests {
 }
 ```
 
-### 2.3 新增更新结果类方法
+### 1.3 新增更新结果类方法
 
-#### 2.3.1 concat 字符串拼接
+#### 1.3.1 concat 字符串拼接
 
 ```java
 class Tests {
@@ -239,7 +205,7 @@ class Tests {
 }
 ```
 
-#### 2.3.2 incr 数字增加
+#### 1.3.2 incr 数字增加
 
 ```java
 class Tests {
@@ -253,7 +219,7 @@ class Tests {
 }
 ```
 
-#### 2.3.3 cas CAS乐观锁逻辑
+#### 1.3.3 cas CAS乐观锁逻辑
 
 ```java
 class Tests {
@@ -267,9 +233,9 @@ class Tests {
 }
 ```
 
-## 3. Mapper功能扩展
+## 2. Mapper扩展
 
-### 3.1 生成包装类
+### 2.1 生成包装类
 
 ```java
 class Tests {
@@ -284,17 +250,103 @@ class Tests {
 }
 ```
 
-
-### 3.2 Lambda方式直接操作包装类
+### 2.2 Lambda方式直接操作包装类
 
 ```java
 class Tests {
     @Test
     public void test() {
         personMapper.selectList(
-                w -> w.eq(Person::getId, 1)
-                        .eq("name", "张三")
+                w -> w.eq(Person::getId, 1).eq("name", "张三")
         );
     }
 }
 ```
+
+## 3. 注解
+
+### 3.1 @TableJoin和@TableJoins 配置联表信息
+
+```java
+class Tests {
+
+    @Data
+    @TableJoins(
+            @TableJoin(value = Job.class, on = {"person.job_id = job.id"})
+    )
+    @TableName("person")
+    public static class Person {
+
+        @TableId("id")
+        private Integer id;
+
+        private Integer jobId;
+    }
+
+    @Test
+    public void test() {
+        // 需要注入实体类型
+        QueryWrapper<Person> queryWrapper = personMapper.query();
+        queryWrapper
+                // 实体类标注@TableJoin时，可忽略join方法
+                //.leftJoin(Job.class, On.eq(Person::getJobId, Job::getId))
+                // 使用func调用联查表的包装方法
+                .func(Job.class, jw -> jw.eq(Job::getId, 1));
+        // 使用联查专用方法
+        personMapper.selectJoinList(queryWrapper);
+        // 输出：
+        // SELECT person.id,person.job_id 
+        // FROM person 
+        // LEFT JOIN job ON (person.job_id=job.id) 
+        // WHERE (job.id = ?)
+    }
+}
+```
+
+### 3.2 @TableAlias 配置别名
+
+```java
+class Tests {
+
+    @Data
+    @TableAlias("p")
+    @TableName("person")
+    public static class Person {
+
+        @TableId("id")
+        private Integer id;
+
+        private Integer jobId;
+    }
+
+    @Data
+    @TableAlias("j")
+    @TableName("job")
+    public static class Job {
+
+        @TableId("id")
+        private Integer id;
+
+        private String name;
+    }
+
+    @Test
+    public void test() {
+        // 需要注入实体类型
+        QueryWrapper<Person> queryWrapper = personMapper.query();
+        queryWrapper.leftJoin(Job.class, On.eq(Person::getJobId, Job::getId))
+                // String类字段会自动补充别名引用
+                .eq("id", 1)
+                // apply方法并不使用String类字段，所以不识别别名
+                .apply("j.id = 2");
+        // 使用联查专用方法
+        personMapper.selectJoinList(queryWrapper);
+        // 输出：
+        // SELECT p.id,p.job_id 
+        // FROM person AS p
+        // LEFT JOIN job AS j ON (p.job_id=j.id) 
+        // WHERE (p.id = ? AND j.id = 2)
+    }
+}
+```
+

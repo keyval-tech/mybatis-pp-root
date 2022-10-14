@@ -204,7 +204,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return 分页结果集
      */
     default <E extends IPage<T>> E selectPage(E page, Consumer<QueryWrapper<T>> queryConsumer) {
-        return selectPage(page, new QueryWrapper<>(MapperUtil.extractModelClass(this)).func(queryConsumer));
+        return selectPage(page, query().func(queryConsumer));
     }
 
     // 重载selectCount

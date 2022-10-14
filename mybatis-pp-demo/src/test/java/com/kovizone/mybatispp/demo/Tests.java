@@ -3,6 +3,8 @@ package com.kovizone.mybatispp.demo;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.Version;
+import com.kovizone.mybatispp.annotation.TableJoin;
+import com.kovizone.mybatispp.annotation.TableJoins;
 import com.kovizone.mybatispp.core.conditions.query.QueryChainWrapper;
 import com.kovizone.mybatispp.core.conditions.query.QueryWrapper;
 import com.kovizone.mybatispp.core.conditions.update.UpdateChainWrapper;
@@ -19,13 +21,14 @@ import javax.annotation.Resource;
 class Tests {
 
     @Data
+    @TableJoins(
+            @TableJoin(value = Job.class, on = {"person.job_id = job.id"})
+    )
     @TableName("person")
     public static class Person {
 
         @TableId("id")
         private Integer id;
-
-        private String name;
 
         private Integer jobId;
     }
@@ -59,11 +62,6 @@ class Tests {
         UpdateWrapper<Person> update = personMapper.update();
         UpdateChainWrapper<Person> updateChain = personMapper.updateChain();
 
-
-        personMapper.selectList(
-                w -> w.eq(Person::getId, 1)
-                        .eq("name", "张三")
-        );
     }
 
     @Data
