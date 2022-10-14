@@ -2,7 +2,7 @@
 
 Mybatis-Plus的增强，所以取名Mybatis-PP，在MP基础上扩展，支持联表简化操作。
 
-# 功能简介
+# 功能增强和快速开始
 
 ## 1. 包含Mybatis-Plus完整功能，不做修改
 
