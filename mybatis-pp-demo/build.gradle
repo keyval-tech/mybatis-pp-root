@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    api project(":mybatis-pp-core")
+    api project(":mybatis-pp")
 
     implementation 'mysql:mysql-connector-java:8.0.30'
     implementation 'com.baomidou:mybatis-plus-boot-starter:3.5.2'
@@ -19,5 +19,5 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-task prepareKotlinBuildScriptModel{
+task prepareKotlinBuildScriptModel {
 }
