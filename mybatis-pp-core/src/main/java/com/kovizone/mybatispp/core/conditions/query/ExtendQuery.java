@@ -1,10 +1,9 @@
 package com.kovizone.mybatispp.core.conditions.query;
 
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.kovizone.mybatispp.annotation.JoinType;
 import com.kovizone.mybatispp.annotation.TableJoin;
 import com.kovizone.mybatispp.annotation.TableJoins;
-import com.kovizone.mybatispp.core.conditions.OnSql;
-import com.kovizone.mybatispp.core.enums.JoinType;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -15,13 +14,18 @@ import java.util.function.Consumer;
  * @author KV
  * @since 2022/09/29
  */
-public interface ExtendQuery<T1, Children> extends LambdaQuery<T1, Children> {
+public interface ExtendQuery<T, Children> extends LambdaQuery<T, Children> {
 
     /**
-     * ignore
+     * 设置查询字段，加上去重关键字
+     * <p>
+     * SELECT DISTINCT columns.get(0), columns.get(1), ...
+     *
+     * @param columns 字段数组
+     * @return children
      */
     @SuppressWarnings("unchecked")
-    Children distinct(SFunction<T1, ?>... columns);
+    Children distinct(SFunction<T, ?>... columns);
 
     /**
      * 设置查询字段，加上去重关键字
@@ -52,273 +56,252 @@ public interface ExtendQuery<T1, Children> extends LambdaQuery<T1, Children> {
      * @return children
      */
     @SuppressWarnings("unchecked")
-    Children appendSelect(SFunction<T1, ?>... columns);
-
-    /**
-     * ignore
-     */
-    default <T2> Children leftJoin(Class<T2> model2) {
-        return leftJoin(true, model2);
-    }
+    Children appendSelect(SFunction<T, ?>... columns);
 
     /**
      * 左联查
      * <p>
-     * model2需要标注{@link TableJoin}或{@link TableJoins}
+     * joinEntityType需要标注{@link TableJoin}或{@link TableJoins}
      *
-     * @param condition 执行条件
-     * @param model2    联表的实体
-     * @param <T2>      联表实体类
+     * @param condition      执行条件
+     * @param joinEntityType 联表的实体
+     * @param <Join>         联表实体类
      * @return children
      */
-    default <T2> Children leftJoin(boolean condition, Class<T2> model2) {
-        return join(condition, JoinType.LEFT_JOIN, model2, (String[]) null);
+    default <Join> Children leftJoin(boolean condition, Class<Join> joinEntityType) {
+        return join(condition, JoinType.LEFT, joinEntityType, (String[]) null);
     }
 
     /**
      * ignore
      */
-    default <T2> Children leftJoin(Class<T2> model2, Consumer<OnSql<T1, T2>> onConsumer) {
-        return leftJoin(true, model2, onConsumer);
+    default <Join> Children leftJoin(Class<Join> joinEntityType, On<T, Join> on) {
+        return leftJoin(true, joinEntityType, on);
     }
 
     /**
      * 左联查
      *
-     * @param condition  执行条件
-     * @param model2     联表的实体
-     * @param onConsumer 描述联查ON条件
-     * @param <T2>       联表实体类
+     * @param condition      执行条件
+     * @param joinEntityType 联表的实体
+     * @param on             描述联查ON条件
+     * @param <Join>         联表实体类
      * @return children
      */
-    default <T2> Children leftJoin(boolean condition, Class<T2> model2, Consumer<OnSql<T1, T2>> onConsumer) {
-        return join(condition, JoinType.LEFT_JOIN, model2, onConsumer);
+    default <Join> Children leftJoin(boolean condition, Class<Join> joinEntityType, On<T, Join> on) {
+        return join(condition, JoinType.LEFT, joinEntityType, on);
     }
 
     /**
      * ignore
      */
-    default <T2> Children leftJoin(Class<T2> model2, String... onSql) {
-        return leftJoin(true, model2, onSql);
+    default <Join> Children leftJoin(Class<Join> joinEntityType, String... onSql) {
+        return leftJoin(true, joinEntityType, onSql);
     }
 
     /**
      * 左联查
      *
-     * @param condition 执行条件
-     * @param model2    联表的实体
-     * @param onSql     联查ON条件
-     * @param <T2>      联表实体类
+     * @param condition      执行条件
+     * @param joinEntityType 联表的实体
+     * @param onSql          联查ON条件
+     * @param <Join>         联表实体类
      * @return children
      */
-    default <T2> Children leftJoin(boolean condition, Class<T2> model2, String... onSql) {
-        return join(condition, JoinType.LEFT_JOIN, model2, onSql);
-    }
-
-    /**
-     * ignore
-     */
-    default <T2> Children rightJoin(Class<T2> model2) {
-        return rightJoin(true, model2);
+    default <Join> Children leftJoin(boolean condition, Class<Join> joinEntityType, String... onSql) {
+        return join(condition, JoinType.LEFT, joinEntityType, onSql);
     }
 
     /**
      * 右联查
      * <p>
-     * model2需要标注{@link TableJoin}或{@link TableJoins}
+     * joinEntityType需要标注{@link TableJoin}或{@link TableJoins}
      *
-     * @param condition 执行条件
-     * @param model2    联表的实体
-     * @param <T2>      联表实体类
+     * @param condition      执行条件
+     * @param joinEntityType 联表的实体
+     * @param <Join>         联表实体类
      * @return children
      */
-    default <T2> Children rightJoin(boolean condition, Class<T2> model2) {
-        return join(condition, JoinType.RIGHT_JOIN, model2, (String[]) null);
+    default <Join> Children rightJoin(boolean condition, Class<Join> joinEntityType) {
+        return join(condition, JoinType.RIGHT, joinEntityType, (String[]) null);
     }
 
     /**
      * ignore
      */
-    default <T2> Children rightJoin(Class<T2> model2, Consumer<OnSql<T1, T2>> onConsumer) {
-        return rightJoin(true, model2, onConsumer);
+    default <Join> Children rightJoin(Class<Join> joinEntityType, On<T, Join> on) {
+        return rightJoin(true, joinEntityType, on);
     }
 
     /**
      * 右联查
      *
-     * @param condition  执行条件
-     * @param model2     联表的实体
-     * @param onConsumer 描述联查ON条件
-     * @param <T2>       联表实体类
+     * @param condition      执行条件
+     * @param joinEntityType 联表的实体
+     * @param on             描述联查ON条件
+     * @param <Join>         联表实体类
      * @return children
      */
-    default <T2> Children rightJoin(boolean condition, Class<T2> model2, Consumer<OnSql<T1, T2>> onConsumer) {
-        return join(condition, JoinType.RIGHT_JOIN, model2, onConsumer);
+    default <Join> Children rightJoin(boolean condition, Class<Join> joinEntityType, On<T, Join> on) {
+        return join(condition, JoinType.RIGHT, joinEntityType, on);
     }
 
     /**
      * ignore
      */
-    default <T2> Children rightJoin(Class<T2> model2, String... onSql) {
-        return rightJoin(true, model2, onSql);
+    default <Join> Children rightJoin(Class<Join> joinEntityType, String... onSql) {
+        return rightJoin(true, joinEntityType, onSql);
     }
 
     /**
      * 右联查
      *
-     * @param condition 执行条件
-     * @param model2    联表的实体
-     * @param onSql     联查ON条件
-     * @param <T2>      联表实体类
+     * @param condition      执行条件
+     * @param joinEntityType 联表的实体
+     * @param onSql          联查ON条件
+     * @param <Join>         联表实体类
      * @return children
      */
-    default <T2> Children rightJoin(boolean condition, Class<T2> model2, String... onSql) {
-        return join(condition, JoinType.RIGHT_JOIN, model2, onSql);
-    }
-
-    /**
-     * ignore
-     */
-    default <T2> Children innerJoin(Class<T2> model2) {
-        return innerJoin(true, model2);
+    default <Join> Children rightJoin(boolean condition, Class<Join> joinEntityType, String... onSql) {
+        return join(condition, JoinType.RIGHT, joinEntityType, onSql);
     }
 
     /**
      * 内联查
      * <p>
-     * model2需要标注{@link TableJoin}或{@link TableJoins}
+     * joinEntityType需要标注{@link TableJoin}或{@link TableJoins}
      *
-     * @param condition 执行条件
-     * @param model2    联表的实体
-     * @param <T2>      联表实体类
+     * @param condition      执行条件
+     * @param joinEntityType 联表的实体
+     * @param <Join>         联表实体类
      * @return children
      */
-    default <T2> Children innerJoin(boolean condition, Class<T2> model2) {
-        return join(condition, JoinType.INNER_JOIN, model2, (String[]) null);
+    default <Join> Children innerJoin(boolean condition, Class<Join> joinEntityType) {
+        return join(condition, JoinType.INNER, joinEntityType, (String[]) null);
     }
 
     /**
      * ignore
      */
-    default <T2> Children innerJoin(Class<T2> model2, Consumer<OnSql<T1, T2>> onSqlConsumer) {
-        return innerJoin(true, model2, onSqlConsumer);
+    default <Join> Children innerJoin(Class<Join> joinEntityType, On<T, Join> on) {
+        return innerJoin(true, joinEntityType, on);
     }
 
     /**
      * 内联查
      *
-     * @param condition  执行条件
-     * @param model2     联表的实体
-     * @param onConsumer 描述联查ON条件
-     * @param <T2>       联表实体类
+     * @param condition      执行条件
+     * @param joinEntityType 联表的实体
+     * @param on             描述联查ON条件
+     * @param <Join>         联表实体类
      * @return children
      */
-    default <T2> Children innerJoin(boolean condition, Class<T2> model2, Consumer<OnSql<T1, T2>> onConsumer) {
-        return join(condition, JoinType.INNER_JOIN, model2, onConsumer);
+    default <Join> Children innerJoin(boolean condition, Class<Join> joinEntityType, On<T, Join> on) {
+        return join(condition, JoinType.INNER, joinEntityType, on);
     }
 
     /**
      * ignore
      */
-    default <T2> Children innerJoin(Class<T2> model2, String... onSql) {
-        return innerJoin(true, model2, onSql);
+    default <Join> Children innerJoin(Class<Join> joinEntityType, String... onSql) {
+        return innerJoin(true, joinEntityType, onSql);
     }
 
     /**
      * 内联查
      *
-     * @param condition 执行条件
-     * @param model2    联表的实体
-     * @param onSql     联查ON条件
-     * @param <T2>      联表实体类
+     * @param condition      执行条件
+     * @param joinEntityType 联表的实体
+     * @param onSql          联查ON条件
+     * @param <Join>         联表实体类
      * @return children
      */
-    default <T2> Children innerJoin(boolean condition, Class<T2> model2, String... onSql) {
-        return join(condition, JoinType.INNER_JOIN, model2, onSql);
+    default <Join> Children innerJoin(boolean condition, Class<Join> joinEntityType, String... onSql) {
+        return join(condition, JoinType.INNER, joinEntityType, onSql);
     }
 
     /**
      * ignore
      */
-    default <T2> Children join(Class<T2> model2, Consumer<OnSql<T1, T2>> onConsumer) {
-        return join(true, null, model2, onConsumer);
+    default <Join> Children join(Class<Join> joinEntityType, On<T, Join> on) {
+        return join(true, null, joinEntityType, on);
     }
 
     /**
      * ignore
      */
-    default <T2> Children join(boolean condition, Class<T2> model2, Consumer<OnSql<T1, T2>> onConsumer) {
-        return join(condition, JoinType.LEFT_JOIN, model2, onConsumer);
+    default <Join> Children join(boolean condition, Class<Join> joinEntityType, On<T, Join> on) {
+        return join(condition, null, joinEntityType, on);
     }
 
     /**
      * ignore
      */
-    default <T2> Children join(Class<T2> model2, String... onSql) {
-        return join(true, JoinType.LEFT_JOIN, model2, onSql);
+    default <Join> Children join(Class<Join> joinEntityType, String... onSql) {
+        return join(true, null, joinEntityType, onSql);
     }
 
     /**
      * ignore
      */
-    default <T2> Children join(boolean condition, Class<T2> model2, String... onSql) {
-        return join(condition, JoinType.LEFT_JOIN, model2, onSql);
+    default <Join> Children join(boolean condition, Class<Join> joinEntityType, String... onSql) {
+        return join(condition, null, joinEntityType, onSql);
     }
 
 
     /**
      * ignore
      */
-    default <T2> Children join(JoinType joinType, Class<T2> model2, Consumer<OnSql<T1, T2>> onConsumer) {
-        return join(true, joinType, model2, onConsumer);
+    default <Join> Children join(JoinType joinType, Class<Join> joinEntityType, On<T, Join> on) {
+        return join(true, joinType, joinEntityType, on);
     }
 
     /**
      * 联查
      *
-     * @param condition  执行条件
-     * @param joinType   联查类型
-     * @param model2     联表的实体
-     * @param onConsumer 描述联查ON条件
-     * @param <T2>       联表实体类
+     * @param condition      执行条件
+     * @param joinType       联查类型
+     * @param joinEntityType 联表的实体
+     * @param on             描述联查ON条件
+     * @param <Join>         联表实体类
      * @return children
      */
-    <T2> Children join(boolean condition, JoinType joinType, Class<T2> model2, Consumer<OnSql<T1, T2>> onConsumer);
+    <Join> Children join(boolean condition, JoinType joinType, Class<Join> joinEntityType, On<T, Join> on);
 
     /**
      * ignore
      */
-    default <T2> Children join(JoinType joinType, Class<T2> model2, String... onSql) {
-        return join(true, joinType, model2, onSql);
+    default <Join> Children join(JoinType joinType, Class<Join> joinEntityType, String... onSql) {
+        return join(true, joinType, joinEntityType, onSql);
     }
 
     /**
      * 联查
      *
-     * @param condition 执行条件
-     * @param joinType  联查类型
-     * @param model2    联表的实体
-     * @param onSql     联查ON条件
-     * @param <T2>      联表实体类
+     * @param condition      执行条件
+     * @param joinType       联查类型
+     * @param joinEntityType 联表的实体
+     * @param onSql          联查ON条件
+     * @param <Join>         联表实体类
      * @return children
      */
-    <T2> Children join(boolean condition, JoinType joinType, Class<T2> model2, String... onSql);
+    <Join> Children join(boolean condition, JoinType joinType, Class<Join> joinEntityType, String... onSql);
 
     /**
      * ignore
      */
-    default <T2> Children func(Class<T2> model2, Consumer<QueryWrapper<T2>> whereConsumer) {
-        return func(true, model2, whereConsumer);
+    default <Join> Children func(Class<Join> joinEntityType, Consumer<QueryWrapper<Join>> joinConsumer) {
+        return func(true, joinEntityType, joinConsumer);
     }
 
     /**
      * 切换选择包装类
      *
-     * @param condition     执行条件
-     * @param model2        联表的实体
-     * @param whereConsumer 描述联查WHERE条件
-     * @param <T2>          联表实体类
+     * @param condition      执行条件
+     * @param joinEntityType 联表的实体
+     * @param joinConsumer   描述联查WHERE条件
+     * @param <Join>         联表实体类
      * @return children
      */
-    <T2> Children func(boolean condition, Class<T2> model2, Consumer<QueryWrapper<T2>> whereConsumer);
+    <Join> Children func(boolean condition, Class<Join> joinEntityType, Consumer<QueryWrapper<Join>> joinConsumer);
 }

@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.Version;
 import com.kovizone.mybatispp.annotation.TableAlias;
+import com.kovizone.mybatispp.annotation.TableJoin;
+import com.kovizone.mybatispp.annotation.TableJoins;
 import lombok.Data;
 
 /**
@@ -14,6 +16,9 @@ import lombok.Data;
  */
 @Data
 @TableAlias("j")
+@TableJoins({
+        @TableJoin(value = Person.class, on = "j.id = p.job_id"),
+})
 @TableName("job")
 public class Job {
 

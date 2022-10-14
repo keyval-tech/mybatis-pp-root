@@ -14,17 +14,24 @@ import java.lang.annotation.*;
 public @interface TableJoin {
 
     /**
+     * 默认连接类型
+     *
+     * @return 默认连接类型
+     */
+    JoinType defaultType() default JoinType.LEFT;
+
+    /**
      * 联查表实体类
      *
      * @return 联查表实体类
      */
-    Class<?> join();
+    Class<?> value();
 
     /**
      * 联查条件
      *
      * @return 联查条件
      */
-    String[] on();
+    String[] on() default {};
 
 }

@@ -34,10 +34,10 @@ public class ReflectUtil {
     }
 
     public static <T extends Annotation> T getAnnotation(AnnotatedElement annotatedElement, Class<T> annoClass) {
-        if (annotatedElement != null && annotatedElement.isAnnotationPresent(annoClass)) {
-            return annotatedElement.getDeclaredAnnotation(annoClass);
-        }
-        return null;
+        return Mapper.of(annotatedElement)
+                .filter(e -> e.isAnnotationPresent(annoClass))
+                .map(e -> e.getDeclaredAnnotation(annoClass))
+                .get();
     }
 
     public static List<Method> getMethodList(Class<?> clazz) {

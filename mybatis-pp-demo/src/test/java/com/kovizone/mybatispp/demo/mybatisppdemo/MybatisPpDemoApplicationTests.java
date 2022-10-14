@@ -1,6 +1,7 @@
 package com.kovizone.mybatispp.demo.mybatisppdemo;
 
 import cn.hutool.json.JSONUtil;
+import com.kovizone.mybatispp.core.conditions.query.On;
 import com.kovizone.mybatispp.demo.entity.Hobby;
 import com.kovizone.mybatispp.demo.entity.Job;
 import com.kovizone.mybatispp.demo.entity.Person;
@@ -22,26 +23,20 @@ class MybatisPpDemoApplicationTests {
     @Resource
     private JobMapper jobMapper;
 
+    private static final Class<Person> PERSON = Person.class;
     private static final Class<Job> JOB = Job.class;
     private static final Class<Hobby> HOBBY = Hobby.class;
 
     @Test
     void contextLoads() {
 
-        final Class<Job> JOB = Job.class;
-        final Class<Hobby> HOBBY = Hobby.class;
-
         List<Map<String, Object>> maps = personMapper.queryChain()
 
-                // Person类已通过注解配置了和Job的ON关系片段
-                .leftJoin(JOB)
+                .leftJoin(JOB, On.eq(Person::getJobId, Job::getId))
 
-                .leftJoin(HOBBY, on -> on.eqColumn(Person::getHobbyId, Hobby::getId))
-                // 等同于 leftJoin(Hobby.class, "p.hobby_id = h.id")
-
-                .eq(Person::getId, 1)
-                .func(JOB, w -> w.eq(Job::getId, 2))
-                .func(HOBBY, w -> w.eq(Hobby::getId, 3))
+                .func(PERSON, p -> p.eq(Person::getId, 1))
+                .func(JOB, j -> j.eq(Job::getId, 2))
+                .func(HOBBY, h -> h.eq(Hobby::getId, 3))
 
                 .joinMaps();
 

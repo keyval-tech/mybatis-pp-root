@@ -1,9 +1,8 @@
 package com.kovizone.mybatispp.core.toolkit;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.conditions.update.Update;
-import com.kovizone.mybatispp.annotation.Operation;
-import com.kovizone.mybatispp.annotation.WrapperModel;
-import com.kovizone.mybatispp.annotation.WrapperModelProperty;
+import com.kovizone.mybatispp.annotation.*;
 import com.kovizone.mybatispp.core.conditions.AbstractExtendWrapper;
 import com.kovizone.mybatispp.core.conditions.query.ExtendQuery;
 import com.kovizone.mybatispp.core.conditions.query.QueryWrapper;
@@ -17,7 +16,9 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -256,5 +257,53 @@ public class WrapperUtil {
         if (consumer != null && Update.class.isAssignableFrom(wrapper.getClass())) {
             consumer.accept((ExtendQuery<T, W>) wrapper);
         }
+    }
+
+    /**
+     * 获取entityClass标记的TableJoin对象
+     *
+     * @param entityClass    主实体类
+     * @param joinEntityType 连接实体类
+     * @param <T1>           主实体
+     * @param <T2>           连接实体
+     * @return TableJoin
+     */
+    public static <T1, T2> TableJoin getTableJoin(Class<T1> entityClass, Class<T2> joinEntityType) {
+        if (entityClass != null) {
+            TableJoin tableJoin = ReflectUtil.getAnnotation(entityClass, TableJoin.class);
+            if (tableJoin != null && tableJoin.value().equals(joinEntityType)) {
+                return tableJoin;
+            }
+            TableJoins tableJoins = ReflectUtil.getAnnotation(entityClass, TableJoins.class);
+            if (tableJoins != null) {
+                for (TableJoin tableJoinNode : tableJoins.value()) {
+                    if (tableJoinNode.value().equals(joinEntityType)) {
+                        return tableJoinNode;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private final static Map<Class<?>, String> TABLE_ALIAS_CACHE = new HashMap<>();
+
+    /**
+     * 获取实体映射表别名（若无，尝试读取表名）
+     *
+     * @param entityClass 实体类
+     * @return 表别名
+     */
+    public static String getTableAlias(Class<?> entityClass) {
+        if (entityClass == null) {
+            return null;
+        }
+        return TABLE_ALIAS_CACHE.computeIfAbsent(entityClass, k -> {
+            String tableAlias = ObjectUtil.map(ReflectUtil.getAnnotation(k, TableAlias.class), TableAlias::value);
+            if (tableAlias == null) {
+                tableAlias = ObjectUtil.map(ReflectUtil.getAnnotation(k, TableName.class), TableName::value);
+            }
+            return tableAlias;
+        });
     }
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.Version;
+import com.kovizone.mybatispp.annotation.JoinType;
 import com.kovizone.mybatispp.annotation.TableAlias;
 import com.kovizone.mybatispp.annotation.TableJoin;
 import com.kovizone.mybatispp.annotation.TableJoins;
@@ -18,8 +19,8 @@ import lombok.Data;
 @Data
 @TableAlias("p")
 @TableJoins({
-        @TableJoin(join = Job.class, on = "p.job_id = j.id"),
-        @TableJoin(join = Hobby.class, on = "p.hobby_id = h.id"),
+        @TableJoin(defaultType = JoinType.INNER, value = Job.class),
+        @TableJoin(value = Hobby.class, on = "p.hobby_id = h.id"),
 })
 @TableName("person")
 public class Person {
@@ -29,8 +30,14 @@ public class Person {
 
     private String name;
 
+    /**
+     * @see Job#getId()
+     */
     private Integer jobId;
 
+    /**
+     * @see Hobby#getId()
+     */
     private Integer hobbyId;
 
     private Integer score;

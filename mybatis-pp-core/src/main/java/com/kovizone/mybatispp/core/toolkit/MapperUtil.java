@@ -1,6 +1,8 @@
 package com.kovizone.mybatispp.core.toolkit;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.kovizone.mybatispp.annotation.TableJoin;
+import com.kovizone.mybatispp.annotation.TableJoins;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

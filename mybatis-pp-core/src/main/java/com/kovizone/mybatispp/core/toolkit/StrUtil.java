@@ -67,4 +67,22 @@ public class StrUtil {
         }
         return arg.substring(arg.length() - suffix.length()).equalsIgnoreCase(suffix);
     }
+
+    /**
+     * 是否包含任一个
+     *
+     * @param arg 原文
+     * @param s   检查
+     * @return 结果
+     */
+    public static boolean containsAny(String arg, CharSequence... s) {
+        if (arg != null) {
+            for (CharSequence c : s) {
+                if (arg.contains(c)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

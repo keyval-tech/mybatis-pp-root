@@ -27,19 +27,4 @@ public class ObjectUtil {
         }
     }
 
-    /**
-     * 映射
-     *
-     * @param entity 实体
-     * @param mapper 映射逻辑
-     * @param mapper2 映射逻辑2
-     * @param <T>    实体类
-     * @param <R>    映射结果类型
-     * @param <R2>    映射结果类型2
-     * @return 映射结果
-     */
-    public static <T, R, R2> R2 map(T entity, Function<T, R> mapper, Function<R, R2> mapper2) {
-        return map(map(entity, mapper), mapper2);
-    }
-
 }

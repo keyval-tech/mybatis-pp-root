@@ -9,16 +9,11 @@ import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.kovizone.mybatispp.annotation.JoinType;
 import com.kovizone.mybatispp.annotation.TableAlias;
 import com.kovizone.mybatispp.annotation.TableJoin;
-import com.kovizone.mybatispp.annotation.TableJoins;
 import com.kovizone.mybatispp.core.conditions.AbstractExtendWrapper;
-import com.kovizone.mybatispp.core.conditions.OnSql;
-import com.kovizone.mybatispp.core.enums.JoinType;
-import com.kovizone.mybatispp.core.toolkit.ArrayUtil;
-import com.kovizone.mybatispp.core.toolkit.ObjectUtil;
-import com.kovizone.mybatispp.core.toolkit.ReflectUtil;
-import com.kovizone.mybatispp.core.toolkit.StrUtil;
+import com.kovizone.mybatispp.core.toolkit.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -48,19 +43,19 @@ public abstract class AbstractQueryExtendWrapper<T, Children extends AbstractQue
     private final SharedString sqlSelect = new SharedString();
 
     /**
-     * 表别名
-     */
-    private String tableAlias;
-
-    /**
-     * 是否联表
-     */
-    protected boolean fromJoin = false;
-
-    /**
      * FROM片段
      */
     private final SharedString sqlFrom = new SharedString();
+
+    /**
+     * 是否需要别名引用（联表时）
+     */
+    protected boolean needAlias = false;
+
+    /**
+     * 连接查询包装缓存
+     */
+    protected final Map<Class<?>, QueryWrapper<?>> joinWrapperCache = new HashMap<>();
 
     public AbstractQueryExtendWrapper() {
         this((T) null);
@@ -85,7 +80,6 @@ public abstract class AbstractQueryExtendWrapper<T, Children extends AbstractQue
     @Override
     public Children setEntityClass(Class<T> entityClass) {
         super.setEntityClass(entityClass);
-        this.tableAlias = ObjectUtil.map(ReflectUtil.getAnnotation(entityClass, TableAlias.class), TableAlias::value);
         return typedThis;
     }
 
@@ -158,82 +152,77 @@ public abstract class AbstractQueryExtendWrapper<T, Children extends AbstractQue
         return appendSelect(columnsToString(columns));
     }
 
+    /**
+     * 获取连接实体的查询包装
+     *
+     * @param joinEntityType 连接实体类
+     * @param <Join>         连接实体
+     * @return 查询包装类
+     */
+    public <Join> QueryWrapper<Join> getJoinWrapper(Class<Join> joinEntityType) {
+        this.needAlias = true;
+        return (QueryWrapper<Join>) joinWrapperCache.computeIfAbsent(joinEntityType, k -> {
+            QueryWrapper<Join> queryWrapper = new QueryWrapper<>((Class<Join>) k);
+            queryWrapper.needAlias = true;
+            // WHERE片段都接入主表的WHERE片段集
+            queryWrapper.paramNameSeq = this.paramNameSeq;
+            queryWrapper.paramNameValuePairs = this.paramNameValuePairs;
+            queryWrapper.expression = this.expression;
+            return queryWrapper;
+        });
+    }
+
     @Override
-    public <T2> Children join(boolean condition, JoinType joinType, Class<T2> model2, Consumer<OnSql<T, T2>> onSqlConsumer) {
-        if (condition && model2 != null) {
-            if (onSqlConsumer != null) {
-                AbstractQueryExtendWrapper<T2, ?> t2QueryChainWrapper = getQueryWrapper(model2);
-                OnSql<T, T2> onSql = new OnSql<>();
-                onSqlConsumer.accept(onSql);
-                List<OnSql.On> onList = onSql.getOnList();
-                if (!onList.isEmpty()) {
-                    String[] onSqlArr = new String[onList.size()];
-                    for (int i = 0; i < onList.size(); i++) {
-                        OnSql.On on = onList.get(i);
-                        if (on instanceof OnSql.StringColumn) {
-                            OnSql.StringColumn onStringColumn = ((OnSql.StringColumn) on);
-                            onSqlArr[i] = String.format("%s=%s", columnToString(onStringColumn.getColumn1()), t2QueryChainWrapper.columnToString(onStringColumn.getColumn2()));
+    public <Join> Children join(boolean condition, JoinType joinType, Class<Join> joinEntityType, On<T, Join> onHelper) {
+        if (condition && joinEntityType != null) {
+            String[] onSqlArr = null;
+            if (onHelper != null) {
+                List<OnNode<T, Join>> onNodeList = onHelper.getOnNodeList();
+                if (!onNodeList.isEmpty()) {
+                    QueryWrapper<Join> joinWrapper = getJoinWrapper(joinEntityType);
+
+                    onSqlArr = new String[onNodeList.size()];
+                    for (int i = 0; i < onNodeList.size(); i++) {
+                        OnNode<T, Join> onNode = onNodeList.get(i);
+                        if (onNode instanceof OnNode.StringColumn) {
+                            OnNode.StringColumn<T, Join> onStringColumn = ((OnNode.StringColumn<T, Join>) onNode);
+                            onSqlArr[i] = String.format("%s=%s", columnToString(onStringColumn.getLeftTableColumn()), joinWrapper.columnToString(onStringColumn.getRightTableColumn()));
                         }
-                        if (on instanceof OnSql.LambdaColumn) {
-                            OnSql.LambdaColumn<T, T2> onStringColumn = ((OnSql.LambdaColumn<T, T2>) on);
-                            onSqlArr[i] = String.format("%s=%s", columnToString(onStringColumn.getColumn1()), t2QueryChainWrapper.columnToString(onStringColumn.getColumn2()));
+                        if (onNode instanceof OnNode.LambdaColumn) {
+                            OnNode.LambdaColumn<T, Join> onStringColumn = ((OnNode.LambdaColumn<T, Join>) onNode);
+                            onSqlArr[i] = String.format("%s=%s", columnToString(onStringColumn.getLeftTableColumn()), joinWrapper.columnToString(onStringColumn.getRightTableColumn()));
                         }
-                        if (on instanceof OnSql.Apply) {
-                            OnSql.Apply onApply = ((OnSql.Apply) on);
+                        if (onNode instanceof OnNode.Apply) {
+                            OnNode.Apply<T, Join> onApply = ((OnNode.Apply<T, Join>) onNode);
                             onSqlArr[i] = onApply.getApplySql();
                         }
                     }
-                    return join(joinType, model2, onSqlArr);
                 }
-            } else {
-                return join(joinType, model2, (String[]) null);
             }
+            return join(joinType, joinEntityType, onSqlArr);
         }
         return typedThis;
     }
 
-    protected TableJoin[] getTableJoins() {
-        Class<T> entityClass = getEntityClass();
-        if (entityClass != null) {
-            TableJoin tableJoin = ReflectUtil.getAnnotation(entityClass, TableJoin.class);
-            if (tableJoin != null) {
-                return new TableJoin[]{tableJoin};
-            }
-            TableJoins tableJoins = ReflectUtil.getAnnotation(entityClass, TableJoins.class);
-            if (tableJoins != null) {
-                return tableJoins.value();
-            }
-        }
-        return new TableJoin[]{};
-    }
-
     @Override
-    public <T2> Children join(boolean condition, JoinType joinType, Class<T2> model2, String... onSqlArr) {
-        if (condition && model2 != null) {
+    public <Join> Children join(boolean condition, JoinType joinType, Class<Join> joinEntityType, String... onSqlArr) {
+        if (condition && joinEntityType != null) {
+            TableJoin tableJoin = WrapperUtil.getTableJoin(getEntityClass(), joinEntityType);
             if (ArrayUtil.isEmpty(onSqlArr)) {
-                TableJoin[] tableJoins = getTableJoins();
-                for (TableJoin tableJoin : tableJoins) {
-                    if (tableJoin.join().equals(model2)) {
-                        onSqlArr = tableJoin.on();
-                        break;
-                    }
-                }
+                // ON条件是相通的
+                onSqlArr = (tableJoin != null && ArrayUtil.isNotEmpty(tableJoin.on())) ?
+                        tableJoin.on() :
+                        Mapper.of(WrapperUtil.getTableJoin(joinEntityType, getEntityClass())).map(TableJoin::on).get();
             }
-            if (ArrayUtil.isNotEmpty(onSqlArr)) {
-                if (joinType == null) {
-                    joinType = JoinType.LEFT_JOIN;
-                }
-                AbstractQueryExtendWrapper<T2, ?> t2QueryChainWrapper = getQueryWrapper(model2);
-                TableInfo table2Info = t2QueryChainWrapper.getTableInfo();
-                if (table2Info != null) {
-                    String alias = ObjectUtil.map(ReflectUtil.getAnnotation(model2, TableAlias.class), TableAlias::value);
-                    // LEFT JOIN %s ON %s
-                    if (StrUtil.isEmpty(alias)) {
-                        appendSqlFrom(joinType.format(table2Info.getTableName(), onSqlArr));
-                    } else {
-                        appendSqlFrom(joinType.format(table2Info.getTableName().concat(" AS ").concat(alias), onSqlArr));
-                    }
-                }
+            if (joinType == null) {
+                // 使用默认连接类型
+                joinType = tableJoin != null ? tableJoin.defaultType() : JoinType.LEFT;
+            }
+            TableInfo joinTableInfo = getJoinWrapper(joinEntityType).getTableInfo();
+            if (joinTableInfo != null) {
+                String alias = ObjectUtil.map(ReflectUtil.getAnnotation(joinEntityType, TableAlias.class), TableAlias::value);
+                // %s JOIN %s AS %s ON %s
+                appendSqlFrom(joinType, joinTableInfo.getTableName(), alias, onSqlArr);
             }
         }
         return typedThis;
@@ -242,44 +231,21 @@ public abstract class AbstractQueryExtendWrapper<T, Children extends AbstractQue
     /**
      * 切换选择包装类
      *
-     * @param condition     执行条件
-     * @param model2        联表的实体
-     * @param whereConsumer 描述联查WHERE条件
-     * @param <T2>          联表实体类
+     * @param condition      执行条件
+     * @param joinEntityType 联表的实体
+     * @param joinConsumer   描述联查WHERE条件
+     * @param <Join>         联表实体类
      * @return children
      */
     @Override
-    public <T2> Children func(boolean condition, Class<T2> model2, Consumer<QueryWrapper<T2>> whereConsumer) {
-        if (condition && model2 != null && whereConsumer != null) {
-            QueryWrapper<T2> t2QueryWrapper = getQueryWrapper(model2);
-            whereConsumer.accept(t2QueryWrapper);
+    public <Join> Children func(boolean condition, Class<Join> joinEntityType, Consumer<QueryWrapper<Join>> joinConsumer) {
+        if (condition && joinEntityType != null && joinConsumer != null) {
+            if (!joinWrapperCache.containsKey(joinEntityType) && !joinEntityType.equals(getEntityClass())) {
+                join(joinEntityType);
+            }
+            joinConsumer.accept(getJoinWrapper(joinEntityType));
         }
         return typedThis;
-    }
-
-    protected final Map<Class<?>, QueryWrapper<?>> joinWrapperCache = new HashMap<>();
-
-    protected final <M> QueryWrapper<M> getQueryWrapper(Class<M> modelClass) {
-        QueryWrapper<M> queryWrapper = (QueryWrapper<M>) joinWrapperCache.get(modelClass);
-        if (queryWrapper == null) {
-            this.fromJoin = true;
-            queryWrapper = new QueryWrapper<>(modelClass);
-            queryWrapper.fromJoin = true;
-            // WHERE片段都接入主表的WHERE片段集
-            queryWrapper.paramNameSeq = this.paramNameSeq;
-            queryWrapper.paramNameValuePairs = this.paramNameValuePairs;
-            queryWrapper.expression = this.expression;
-
-            joinWrapperCache.put(modelClass, queryWrapper);
-        }
-        return queryWrapper;
-    }
-
-    protected String getTableAlias() {
-        if (tableAlias == null) {
-            tableAlias = ObjectUtil.map(this, AbstractQueryExtendWrapper::getTableInfo, TableInfo::getTableName);
-        }
-        return tableAlias;
     }
 
     @Override
@@ -291,7 +257,7 @@ public abstract class AbstractQueryExtendWrapper<T, Children extends AbstractQue
                 sqlSelect = tableInfo.getAllSqlSelect();
             }
         }
-        if (fromJoin) {
+        if (needAlias) {
             return Arrays.stream(sqlSelect.split(StringPool.COMMA))
                     .map(this::columnToString)
                     .collect(Collectors.joining(StringPool.COMMA));
@@ -301,37 +267,58 @@ public abstract class AbstractQueryExtendWrapper<T, Children extends AbstractQue
 
     @Override
     protected String columnToString(String column) {
-        if (fromJoin
-                && !column.contains(StringPool.DOT)
-                && !column.contains(StringPool.LEFT_BRACKET)
-                && !column.contains(StringPool.RIGHT_BRACKET)) {
-            TableInfo tableInfo = getTableInfo();
-            if (tableInfo != null) {
-                return getTableAlias().concat(StringPool.DOT).concat(super.columnToString(column));
+        if (needAlias && !StrUtil.containsAny(column, StringPool.DOT, StringPool.LEFT_BRACKET, StringPool.RIGHT_BRACKET)) {
+            String tableAlias = WrapperUtil.getTableAlias(getEntityClass());
+            if (tableAlias != null) {
+                return tableAlias.concat(StringPool.DOT).concat(super.columnToString(column));
             }
         }
         return super.columnToString(column);
     }
 
+    /**
+     * 获取FROM片段
+     *
+     * @return 获取FROM片段
+     */
     public String getSqlFrom() {
         if (StrUtil.isEmpty(sqlFrom.getStringValue())) {
             TableInfo tableInfo = getTableInfo();
             if (tableInfo != null) {
                 String tableName = tableInfo.getTableName();
-                String alias = getTableAlias();
-                if (tableName.equals(alias)) {
-                    sqlFrom.setStringValue(tableName);
-                } else {
-                    sqlFrom.setStringValue(tableName.concat(" AS ").concat(alias));
+                String tableAlias = WrapperUtil.getTableAlias(tableInfo.getEntityType());
+                if (!tableName.equals(tableAlias)) {
+                    tableName = tableName.concat(StringPool.SPACE).concat(tableAlias);
                 }
+                sqlFrom.setStringValue(tableName);
             }
         }
         return sqlFrom.getStringValue();
     }
 
-    protected void appendSqlFrom(String sqlFrom) {
-        if (StrUtil.isNotEmpty(sqlFrom)) {
-            this.sqlFrom.setStringValue(getSqlFrom().concat(StringPool.SPACE).concat(sqlFrom));
+    /**
+     * 拼接FROM片段
+     *
+     * @param joinType       连接类型
+     * @param joinTableName  连接表
+     * @param joinTableAlias 连接表别名
+     * @param joinTableOn    连接ON条件
+     */
+    protected void appendSqlFrom(JoinType joinType, String joinTableName, String joinTableAlias, String[] joinTableOn) {
+
+        if (StrUtil.isEmpty(joinTableName)) {
+            return;
         }
+        if (joinType == null) {
+            joinType = JoinType.LEFT;
+        }
+        if (StrUtil.isNotEmpty(joinTableAlias) && !joinTableName.equals(joinTableAlias)) {
+            joinTableName = joinTableName.concat(StringPool.SPACE).concat(joinTableAlias);
+        }
+        String sqlFrom = getSqlFrom().concat(StringPool.SPACE).concat(joinType.toString()).concat(" JOIN ").concat(joinTableName);
+        if (ArrayUtil.isNotEmpty(joinTableOn)) {
+            sqlFrom = sqlFrom.concat(String.format(" ON (%s)", String.join(StringPool.COMMA, joinTableOn)));
+        }
+        this.sqlFrom.setStringValue(sqlFrom);
     }
 }
