@@ -2,8 +2,6 @@ package com.kovizone.mybatispp.core.conditions.query;
 
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.kovizone.mybatispp.annotation.JoinType;
-import com.kovizone.mybatispp.annotation.TableJoin;
-import com.kovizone.mybatispp.annotation.TableJoins;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -59,20 +57,6 @@ public interface ExtendQuery<T, Children> extends LambdaQuery<T, Children> {
     Children appendSelect(SFunction<T, ?>... columns);
 
     /**
-     * 左联查
-     * <p>
-     * joinEntityType需要标注{@link TableJoin}或{@link TableJoins}
-     *
-     * @param condition      执行条件
-     * @param joinEntityType 联表的实体
-     * @param <Join>         联表实体类
-     * @return children
-     */
-    default <Join> Children leftJoin(boolean condition, Class<Join> joinEntityType) {
-        return join(condition, JoinType.LEFT, joinEntityType, (String[]) null);
-    }
-
-    /**
      * ignore
      */
     default <Join> Children leftJoin(Class<Join> joinEntityType, On<T, Join> on) {
@@ -110,20 +94,6 @@ public interface ExtendQuery<T, Children> extends LambdaQuery<T, Children> {
      */
     default <Join> Children leftJoin(boolean condition, Class<Join> joinEntityType, String... onSql) {
         return join(condition, JoinType.LEFT, joinEntityType, onSql);
-    }
-
-    /**
-     * 右联查
-     * <p>
-     * joinEntityType需要标注{@link TableJoin}或{@link TableJoins}
-     *
-     * @param condition      执行条件
-     * @param joinEntityType 联表的实体
-     * @param <Join>         联表实体类
-     * @return children
-     */
-    default <Join> Children rightJoin(boolean condition, Class<Join> joinEntityType) {
-        return join(condition, JoinType.RIGHT, joinEntityType, (String[]) null);
     }
 
     /**
@@ -167,20 +137,6 @@ public interface ExtendQuery<T, Children> extends LambdaQuery<T, Children> {
     }
 
     /**
-     * 内联查
-     * <p>
-     * joinEntityType需要标注{@link TableJoin}或{@link TableJoins}
-     *
-     * @param condition      执行条件
-     * @param joinEntityType 联表的实体
-     * @param <Join>         联表实体类
-     * @return children
-     */
-    default <Join> Children innerJoin(boolean condition, Class<Join> joinEntityType) {
-        return join(condition, JoinType.INNER, joinEntityType, (String[]) null);
-    }
-
-    /**
      * ignore
      */
     default <Join> Children innerJoin(Class<Join> joinEntityType, On<T, Join> on) {
@@ -218,6 +174,46 @@ public interface ExtendQuery<T, Children> extends LambdaQuery<T, Children> {
      */
     default <Join> Children innerJoin(boolean condition, Class<Join> joinEntityType, String... onSql) {
         return join(condition, JoinType.INNER, joinEntityType, onSql);
+    }
+
+    /**
+     * ignore
+     */
+    default <Join> Children fullJoin(Class<Join> joinEntityType, On<T, Join> on) {
+        return fullJoin(true, joinEntityType, on);
+    }
+
+    /**
+     * 内联查
+     *
+     * @param condition      执行条件
+     * @param joinEntityType 联表的实体
+     * @param on             描述联查ON条件
+     * @param <Join>         联表实体类
+     * @return children
+     */
+    default <Join> Children fullJoin(boolean condition, Class<Join> joinEntityType, On<T, Join> on) {
+        return join(condition, JoinType.FULL, joinEntityType, on);
+    }
+
+    /**
+     * ignore
+     */
+    default <Join> Children fullJoin(Class<Join> joinEntityType, String... onSql) {
+        return fullJoin(true, joinEntityType, onSql);
+    }
+
+    /**
+     * 内联查
+     *
+     * @param condition      执行条件
+     * @param joinEntityType 联表的实体
+     * @param onSql          联查ON条件
+     * @param <Join>         联表实体类
+     * @return children
+     */
+    default <Join> Children fullJoin(boolean condition, Class<Join> joinEntityType, String... onSql) {
+        return join(condition, JoinType.FULL, joinEntityType, onSql);
     }
 
     /**

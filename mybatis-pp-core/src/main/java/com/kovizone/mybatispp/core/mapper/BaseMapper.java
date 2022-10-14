@@ -34,7 +34,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return QueryWrapper:
      */
     default QueryWrapper<T> query() {
-        return new QueryWrapper<>();
+        return new QueryWrapper<>(MapperUtil.extractModelClass(this));
     }
 
     /**
@@ -43,7 +43,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return UpdateWrapper
      */
     default UpdateWrapper<T> update() {
-        return new UpdateWrapper<>();
+        return new UpdateWrapper<>(MapperUtil.extractModelClass(this));
     }
 
     /**
@@ -72,6 +72,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @param wrapper 查询条件
      * @return 结果对象集
      */
+    @Select("SELECT ${ew.sqlSelect} FROM ${ew.sqlFrom} ${ew.customSqlSegment}")
     List<T> selectJoinList(@Param(Constants.WRAPPER) Wrapper<T> wrapper);
 
     /**
@@ -163,7 +164,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return 映射结果
      */
     default List<T> selectList(Consumer<QueryWrapper<T>> queryConsumer) {
-        return selectList(new QueryWrapper<>(MapperUtil.extractModelClass(this)).func(queryConsumer));
+        return selectList(query().func(queryConsumer));
     }
 
     /**

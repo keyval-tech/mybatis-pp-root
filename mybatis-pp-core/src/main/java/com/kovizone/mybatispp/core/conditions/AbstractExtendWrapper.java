@@ -513,7 +513,7 @@ public abstract class AbstractExtendWrapper<T, Children extends AbstractExtendWr
 
     @Override
     public Children setEntityClass(Class<T> entityClass) {
-        if (entityClass != null && !entityClass.equals(super.getEntityClass())) {
+        if (entityClass != null) {
             this.tableInfo = TableInfoHelper.getTableInfo(entityClass);
         }
         super.setEntityClass(entityClass);

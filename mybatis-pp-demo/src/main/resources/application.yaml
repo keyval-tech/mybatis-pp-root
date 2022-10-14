@@ -8,3 +8,4 @@ logging:
   level:
     ROOT: INFO
     com.kovizone.mybatispp.demo.mapper: DEBUG
+    com.kovizone.mybatispp.demo: DEBUG

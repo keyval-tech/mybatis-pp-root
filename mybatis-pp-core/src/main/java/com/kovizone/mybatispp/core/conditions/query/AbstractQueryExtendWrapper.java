@@ -315,7 +315,10 @@ public abstract class AbstractQueryExtendWrapper<T, Children extends AbstractQue
         if (StrUtil.isNotEmpty(joinTableAlias) && !joinTableName.equals(joinTableAlias)) {
             joinTableName = joinTableName.concat(StringPool.SPACE).concat(joinTableAlias);
         }
-        String sqlFrom = getSqlFrom().concat(StringPool.SPACE).concat(joinType.toString()).concat(" JOIN ").concat(joinTableName);
+        String sqlFrom = getSqlFrom()
+                .concat(StringPool.SPACE)
+                .concat(joinType.toString())
+                .concat(" JOIN ").concat(joinTableName);
         if (ArrayUtil.isNotEmpty(joinTableOn)) {
             sqlFrom = sqlFrom.concat(String.format(" ON (%s)", String.join(StringPool.COMMA, joinTableOn)));
         }
