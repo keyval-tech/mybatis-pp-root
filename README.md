@@ -4,39 +4,22 @@ Mybatis-Plus的增强，所以取名Mybatis-PP，在MP基础上扩展，支持�
 
 # 快速开始
 
-## 1. Wrapper扩展
+## 0. 引入
 
-### 1.1 Lambda字段和String字段混用
+与原MP类存在同名的类
 
 ```java
 import com.kovizone.mybatispp.core.mapper.BaseMapper;
 import com.kovizone.mybatispp.core.conditions.query.QueryWrapper;
 import com.kovizone.mybatispp.core.conditions.update.UpdateWrapper;
+```
 
-@SpringBootTest
+## 1. Wrapper扩展
+
+### 1.1 Lambda字段和String字段混用
+
+```java
 class Tests {
-
-    @Data
-    @TableName("person")
-    public static class Person {
-
-        @TableId("id")
-        private Integer id;
-
-        private String name;
-
-        @Version
-        private Integer version;
-    }
-
-    @Mapper
-    public interface PersonMapper extends BaseMapper<Person> {
-    }
-
-    @Resource
-    private PersonMapper personMapper;
-
-    @Test
     public void test() {
         // Lambda字段和String字段混用
         new QueryWrapper<Person>().eq(Person::getId, 1).like("name", "张三");
@@ -141,7 +124,6 @@ class Tests {
 
 ```java
 class Tests {
-    @Test
     public void test() {
         QueryWrapper<Person> queryWrapper = personMapper.query();
         queryWrapper.notInOrIsNull(Person::getName, "王", "陈");
@@ -157,7 +139,6 @@ class Tests {
 
 ```java
 class Tests {
-    @Test
     public void test() {
         QueryWrapper<Person> queryWrapper = personMapper.query();
         queryWrapper.distinct(Person::getName, Person::getId);
@@ -171,7 +152,6 @@ class Tests {
 
 ```java
 class Tests {
-    @Test
     public void test() {
         // 需要注入实体类型
         QueryWrapper<Person> queryWrapper = personMapper.query();
@@ -195,7 +175,6 @@ class Tests {
 
 ```java
 class Tests {
-    @Test
     public void test() {
         UpdateWrapper<Person> updateWrapper = personMapper.update();
         updateWrapper.eq(Person::getId, 1).concat(Person::getName, "三");
@@ -209,7 +188,6 @@ class Tests {
 
 ```java
 class Tests {
-    @Test
     public void test() {
         UpdateWrapper<Person> updateWrapper = personMapper.update();
         updateWrapper.eq(Person::getId, 1).incr(Person::getVersion, 1);
@@ -223,7 +201,6 @@ class Tests {
 
 ```java
 class Tests {
-    @Test
     public void test() {
         UpdateWrapper<Person> updateWrapper = personMapper.update();
         updateWrapper.eq(Person::getId, 1).cas(Person::getVersion, 1);
@@ -239,7 +216,6 @@ class Tests {
 
 ```java
 class Tests {
-    @Test
     public void test() {
         QueryWrapper<Person> query = personMapper.query();
         QueryChainWrapper<Person> queryChain = personMapper.queryChain();
@@ -254,7 +230,6 @@ class Tests {
 
 ```java
 class Tests {
-    @Test
     public void test() {
         personMapper.selectList(
                 w -> w.eq(Person::getId, 1).eq("name", "张三")
@@ -270,7 +245,6 @@ class Tests {
 ```java
 class Tests {
 
-    @Data
     @TableJoins(
             @TableJoin(value = Job.class, on = {"person.job_id = job.id"})
     )
@@ -283,7 +257,6 @@ class Tests {
         private Integer jobId;
     }
 
-    @Test
     public void test() {
         // 需要注入实体类型
         QueryWrapper<Person> queryWrapper = personMapper.query();
@@ -308,7 +281,6 @@ class Tests {
 ```java
 class Tests {
 
-    @Data
     @TableAlias("p")
     @TableName("person")
     public static class Person {
@@ -319,7 +291,6 @@ class Tests {
         private Integer jobId;
     }
 
-    @Data
     @TableAlias("j")
     @TableName("job")
     public static class Job {
@@ -330,7 +301,6 @@ class Tests {
         private String name;
     }
 
-    @Test
     public void test() {
         // 需要注入实体类型
         QueryWrapper<Person> queryWrapper = personMapper.query();
@@ -342,11 +312,9 @@ class Tests {
         // 使用联查专用方法
         personMapper.selectJoinList(queryWrapper);
         // 输出：
-        // SELECT p.id,p.job_id 
-        // FROM person AS p
+        // SELECT p.id,p.job_id FROM person AS p
         // LEFT JOIN job AS j ON (p.job_id=j.id) 
         // WHERE (p.id = ? AND j.id = 2)
     }
 }
 ```
-
