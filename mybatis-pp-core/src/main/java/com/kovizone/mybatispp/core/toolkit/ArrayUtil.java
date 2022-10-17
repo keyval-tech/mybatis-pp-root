@@ -20,6 +20,10 @@ public class ArrayUtil {
         return !isEmpty(arr);
     }
 
+    public static boolean isArray(Object obj) {
+        return obj != null && obj.getClass().isArray();
+    }
+
     public static Object[] parse(Object array) {
         if (array == null) {
             return null;

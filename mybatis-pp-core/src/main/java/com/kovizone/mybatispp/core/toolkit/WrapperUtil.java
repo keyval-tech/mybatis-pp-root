@@ -61,14 +61,14 @@ public class WrapperUtil {
 
             // 实体类型
             if (wrapper.getEntityClass() == null) {
-                Class<?> modelClass = wrapperModel != null ? wrapperModel.model() : Void.class;
-                if (!modelClass.equals(Void.class)) {
-                    wrapper.setEntityClass((Class<T>) modelClass);
+                Class<?> modelClass = wrapperModel != null ? wrapperModel.model() : DefaultType.class;
+                if (DefaultType.isDefaultType(wrapperModel)) {
+                    wrapper.setEntityClass((Class<T>) wrapperModel.model());
                 }
             }
 
             // 自定义SQL
-            String[] applyArr = wrapperModel != null ? wrapperModel.apply() : new String[]{};
+            String[] applyArr = wrapperModel != null ? wrapperModel.where() : new String[]{};
             for (String apply : applyArr) {
                 wrapper.apply(apply);
             }

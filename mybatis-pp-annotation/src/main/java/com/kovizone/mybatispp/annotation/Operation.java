@@ -1,11 +1,16 @@
 package com.kovizone.mybatispp.annotation;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * 操作枚举（非标准SQL操作符）
  *
  * @author KV
  * @since 2021/08/30 11:30
  */
+@Getter
+@AllArgsConstructor
 public enum Operation {
 
     /**
@@ -128,15 +133,7 @@ public enum Operation {
 
     private final boolean supportOr;
 
-    Operation(boolean supportOr) {
-        this.supportOr = supportOr;
-    }
-
     Operation() {
-        this.supportOr = true;
-    }
-
-    public boolean isSupportOr() {
-        return supportOr;
+        this(true);
     }
 }

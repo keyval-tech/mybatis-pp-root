@@ -18,14 +18,14 @@ public @interface WrapperModel {
      *
      * @return 实体类型
      */
-    Class<?> model() default Void.class;
+    Class<?> model() default DefaultType.class;
 
     /**
-     * 自定义SQL
+     * 自定义WHERE片段
      *
      * @return 自定义SQL
      */
-    String[] apply() default {};
+    String[] where() default {};
 
     /**
      * 自定义排序
