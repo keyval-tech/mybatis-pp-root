@@ -12,8 +12,8 @@ public final class DefaultType {
         return DefaultType.class.equals(wrapperModel.model());
     }
 
-    public static boolean isDefaultType(WrapperModelProperty wrapperModelProperty) {
+    /*public static boolean isDefaultType(WrapperModelProperty wrapperModelProperty) {
         return DefaultType.class.equals(wrapperModelProperty.model());
-    }
+    }*/
 
 }
