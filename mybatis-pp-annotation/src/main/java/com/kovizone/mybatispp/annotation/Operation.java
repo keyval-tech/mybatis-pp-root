@@ -4,7 +4,7 @@ package com.kovizone.mybatispp.annotation;
  * 操作枚举（非标准SQL操作符）
  *
  * @author KV
- * @date 2021/08/30 11:30
+ * @since 2021/08/30 11:30
  */
 public enum Operation {
 
