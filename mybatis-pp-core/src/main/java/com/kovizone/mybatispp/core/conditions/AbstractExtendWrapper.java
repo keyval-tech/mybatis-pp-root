@@ -90,6 +90,8 @@ public abstract class AbstractExtendWrapper<T, Children extends AbstractExtendWr
     /**
      * 复制AbstractLambdaWrapper#getColumnCache(SFunction)代码
      *
+     * @param column 字段
+     * @return 字段缓存信息
      * @see com.baomidou.mybatisplus.core.conditions.AbstractLambdaWrapper
      */
     protected ColumnCache getColumnCache(SFunction<T, ?> column) {

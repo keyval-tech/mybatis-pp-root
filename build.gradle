@@ -36,6 +36,10 @@ ext {
 allprojects {
     group = 'com.kovizone'
     version = "${mybatisPpVersion}" as Object
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
 }
 
 subprojects {
@@ -127,6 +131,7 @@ subprojects {
             }
         }
         repositories {
+
             maven {
                 def userName = System.getProperty("un")
                 def passWord = System.getProperty("ps")

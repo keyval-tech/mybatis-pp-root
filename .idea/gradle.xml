@@ -13,7 +13,6 @@
             <option value="$PROJECT_DIR$/mybatis-pp-annotation" />
             <option value="$PROJECT_DIR$/mybatis-pp-boot-starter" />
             <option value="$PROJECT_DIR$/mybatis-pp-core" />
-            <option value="$PROJECT_DIR$/mybatis-pp-demo" />
           </set>
         </option>
       </GradleProjectSettings>
