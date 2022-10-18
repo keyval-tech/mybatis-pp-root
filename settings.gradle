@@ -3,4 +3,5 @@ include 'mybatis-pp-core'
 include 'mybatis-pp-annotation'
 include 'mybatis-pp-demo'
 include 'mybatis-pp'
+include 'mybatis-pp-boot-starter'
 

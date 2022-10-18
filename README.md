@@ -6,7 +6,17 @@ Mybatis-Plus的增强，所以取名Mybatis-PP，在MP基础上扩展，支持�
 
 ## 0. 引入
 
-与原MP类存在同名的类
+- 引入MAVEN项目（pom.xml）
+
+```xml
+<dependency>
+    <groupId>com.kovizone</groupId>
+    <artifactId>mybatis-pp-boot-starter</artifactId>
+    <version>3.5.2</version>
+</dependency>
+```
+
+- 需要做出区分，与原MP类存在同名的类
 
 ```java
 import com.kovizone.mybatispp.core.mapper.BaseMapper;

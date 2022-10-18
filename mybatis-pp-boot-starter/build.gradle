@@ -1,0 +1,5 @@
+dependencies {
+    api project(":mybatis-pp")
+
+    api 'com.baomidou:mybatis-plus-boot-starter:3.5.2'
+}

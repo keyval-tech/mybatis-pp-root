@@ -56,12 +56,8 @@ class Tests {
 
     @Test
     public void test() {
-        QueryWrapper<Person> query = personMapper.query();
         QueryChainWrapper<Person> queryChain = personMapper.queryChain();
-
-        UpdateWrapper<Person> update = personMapper.update();
-        UpdateChainWrapper<Person> updateChain = personMapper.updateChain();
-
+        queryChain.list();
     }
 
     @Data

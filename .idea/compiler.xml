@@ -10,10 +10,12 @@
         <module name="mybatis-pp-root.mybatis-pp.main" />
         <module name="mybatis-pp-root.mybatis-pp-demo.test" />
         <module name="mybatis-pp-root.mybatis-pp-annotation.main" />
+        <module name="mybatis-pp-root.mybatis-pp-boot-starter.main" />
         <module name="mybatis-pp-root.mybatis-pp-core.main" />
         <module name="mybatis-pp-root.mybatis-pp.test" />
         <module name="mybatis-pp-root.mybatis-pp-annotation.test" />
         <module name="mybatis-pp-root.mybatis-pp-demo.main" />
+        <module name="mybatis-pp-root.mybatis-pp-boot-starter.test" />
         <module name="mybatis-pp-root.mybatis-pp-core.test" />
       </profile>
     </annotationProcessing>
