@@ -12,7 +12,7 @@ Mybatis-Plus的增强，所以取名Mybatis-PP，在MP基础上扩展，支持�
 <dependency>
     <groupId>com.kovizone</groupId>
     <artifactId>mybatis-pp-boot-starter</artifactId>
-    <version>3.5.2</version>
+    <version>3.5.2-1</version>
 </dependency>
 ```
 
