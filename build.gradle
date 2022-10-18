@@ -16,24 +16,25 @@ ext {
 
     lib = [
             // mybatis-plus
-            "mybatisPlus"          : "com.baomidou:mybatis-plus:${mybatisPlusVersion}",
-            "mybatisPlusCore"      : "com.baomidou:mybatis-plus-core:${mybatisPlusVersion}",
-            "mybatisPlusAnnotation": "com.baomidou:mybatis-plus-annotation:${mybatisPlusVersion}",
-            "mybatisPlusExtension" : "com.baomidou:mybatis-plus-extension:${mybatisPlusVersion}",
+            "mybatisPlus"           : "com.baomidou:mybatis-plus:${mybatisPlusVersion}",
+            "mybatisPlusCore"       : "com.baomidou:mybatis-plus-core:${mybatisPlusVersion}",
+            "mybatisPlusAnnotation" : "com.baomidou:mybatis-plus-annotation:${mybatisPlusVersion}",
+            "mybatisPlusExtension"  : "com.baomidou:mybatis-plus-extension:${mybatisPlusVersion}",
+            "mybatisPlusBootStarter": "com.baomidou:mybatis-plus-boot-starter:${mybatisPlusVersion}",
 
             // spring
-            "springExpression"     : "org.springframework:spring-expression:${springExpressionVersion}",
+            "springExpression"      : "org.springframework:spring-expression:${springExpressionVersion}",
 
             // other
-            "lombok"               : "org.projectlombok:lombok:${lombokVersion}",
-            "junit-api"            : "org.junit.jupiter:junit-jupiter-api:${junitVersion}",
-            "junit-engine"         : "org.junit.jupiter:junit-jupiter-engine:${junitVersion}",
+            "lombok"                : "org.projectlombok:lombok:${lombokVersion}",
+            "junit-api"             : "org.junit.jupiter:junit-jupiter-api:${junitVersion}",
+            "junit-engine"          : "org.junit.jupiter:junit-jupiter-engine:${junitVersion}",
     ]
 }
 
 allprojects {
     group = 'com.kovizone'
-    version = "3.5.2"
+    version = "${mybatisPlusVersion}"
 }
 
 subprojects {
