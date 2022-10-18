@@ -9,6 +9,7 @@ ext {
 
     versions = [
             mybatisPlusVersion = '3.5.2',
+            mybatisPpVersion = '3.5.2-1',
             springExpressionVersion = '5.3.23',
             lombokVersion = '1.18.24',
             junitVersion = '5.9.0',
@@ -34,7 +35,7 @@ ext {
 
 allprojects {
     group = 'com.kovizone'
-    version = "${mybatisPlusVersion}"
+    version = "${mybatisPpVersion}" as Object
 }
 
 subprojects {
